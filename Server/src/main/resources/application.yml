@@ -1,6 +1,6 @@
 # Port
 server:
-  port: 8080
+  port: 10000
 
 # JPA
 spring:
@@ -18,3 +18,24 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  main:
+    allow-bean-definition-overriding: true
+
+#  spring:
+#    security:
+#      oauth2:
+#        client:
+##          registration:
+##            google:
+##              clientId:
+###              clientSecret:
+##              scope:
+##                - email
+##                - profile
+#          provider:
+#            google:
+#              authorizationUri: https://accounts.google.com/o/oauth2/auth
+#              tokenUri: https://oauth2.googleapis.com/token
+#              userInfoUri: https://openidconnect.googleapis.com/v1/userinfo
+#              userNameAttribute: sub
