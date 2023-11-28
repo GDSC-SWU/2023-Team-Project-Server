@@ -3,8 +3,10 @@ package com.gdscswu_server.server.global.config;
 import com.gdscswu_server.server.domain.member.domain.MemberRepository;
 import com.gdscswu_server.server.global.error.handler.ExceptionHandlerFilter;
 import com.gdscswu_server.server.global.util.GoogleOAuthUtil;
+import com.gdscswu_server.server.global.util.JwtUtil;
 import com.gdscswu_server.server.global.util.ResponseUtil;
 import com.gdscswu_server.server.global.util.filter.AuthenticationFilter;
+import com.gdscswu_server.server.global.util.filter.JwtAuthenticationProcessingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +23,9 @@ import org.springframework.web.cors.CorsUtils;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    private final ResponseUtil responseUtil;
     private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
+    private final ResponseUtil responseUtil;
     private final GoogleOAuthUtil googleOAuthUtil;
 
     @Bean
@@ -44,7 +47,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user/login/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterAfter(authenticationFilter(), LogoutFilter.class)
+                .addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class)
+                .addFilterBefore(authenticationFilter(), JwtAuthenticationProcessingFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(responseUtil), AuthenticationFilter.class)
         ;
 
@@ -52,7 +56,12 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
+        return new JwtAuthenticationProcessingFilter(jwtUtil, responseUtil);
+    }
+
+    @Bean
     public AuthenticationFilter authenticationFilter() {
-        return new AuthenticationFilter(memberRepository, googleOAuthUtil, responseUtil);
+        return new AuthenticationFilter(memberRepository, googleOAuthUtil, responseUtil, jwtUtil);
     }
 }
