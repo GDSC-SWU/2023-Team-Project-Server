@@ -21,14 +21,12 @@ public class Member {
     @NotNull
     private String googleEmail;
 
-    @NotNull
     private String name;
-
+    private String profileImagePath;
     private String major;
     private Integer admissionYear;
     private String introduction;
     private String email;
-    private String profileImagePath;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,6 +37,7 @@ public class Member {
         this.googleEmail = googleEmail;
         this.name = name;
         this.profileImagePath = profileImagePath;
+        this.role = Role.USER;
     }
 
     @Override
@@ -60,10 +59,5 @@ public class Member {
         this.profileImagePath = profileImagePath;
 
         return this;
-    }
-
-
-    public String getRoleKey() {
-        return this.role.getKey();
     }
 }
