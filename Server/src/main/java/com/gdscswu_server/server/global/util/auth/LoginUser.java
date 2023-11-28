@@ -1,4 +1,4 @@
-package com.gdscswu_server.server.config.auth;
+package com.gdscswu_server.server.global.util.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

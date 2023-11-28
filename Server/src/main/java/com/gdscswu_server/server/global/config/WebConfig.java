@@ -1,6 +1,6 @@
-package com.gdscswu_server.server.config;
+package com.gdscswu_server.server.global.config;
 
-import com.gdscswu_server.server.config.auth.LoginUserArgumentResolver;
+import com.gdscswu_server.server.global.util.auth.LoginUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

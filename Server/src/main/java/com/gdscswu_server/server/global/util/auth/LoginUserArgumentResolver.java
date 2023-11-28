@@ -1,6 +1,6 @@
-package com.gdscswu_server.server.config.auth;
+package com.gdscswu_server.server.global.util.auth;
 
-import com.gdscswu_server.server.config.auth.dto.SessionUser;
+import com.gdscswu_server.server.global.util.auth.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

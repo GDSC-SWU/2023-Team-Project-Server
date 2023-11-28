@@ -1,4 +1,4 @@
-package com.gdscswu_server.server.domain.member.domain;
+package com.gdscswu_server.server.domain.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

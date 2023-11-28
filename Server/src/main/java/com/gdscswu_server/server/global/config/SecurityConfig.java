@@ -1,5 +1,6 @@
-package com.gdscswu_server.server.config.auth;
+package com.gdscswu_server.server.global.config;
 
+import com.gdscswu_server.server.global.util.auth.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,10 +32,11 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/users/myinfo")).hasRole("USER")
                         .requestMatchers(new AntPathRequestMatcher("/api/v1/**")).permitAll())
 
-                        .logout((logout) -> logout.logoutSuccessUrl("/"))
-                        .oauth2Login(oauth2 -> oauth2
-                            .userInfoEndpoint(infoEndpoint ->
-                                infoEndpoint.userService(customOAuth2UserService)));;
+                .logout((logout) -> logout.logoutSuccessUrl("/"))
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(infoEndpoint ->
+                                infoEndpoint.userService(customOAuth2UserService)));
+        ;
 
         return httpSecurity.build();
     }

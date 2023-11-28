@@ -1,9 +1,9 @@
-package com.gdscswu_server.server.config.auth;
+package com.gdscswu_server.server.global.util.auth;
 
-import com.gdscswu_server.server.config.auth.dto.OAuthAttributes;
-import com.gdscswu_server.server.config.auth.dto.SessionUser;
 import com.gdscswu_server.server.domain.member.domain.Member;
 import com.gdscswu_server.server.domain.member.domain.MemberRepository;
+import com.gdscswu_server.server.global.util.auth.dto.OAuthAttributes;
+import com.gdscswu_server.server.global.util.auth.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -47,7 +47,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private Member saveOrUpdate(OAuthAttributes attributes) {
         Member user = memberRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName(), attributes.getProfile_image()))
+                .map(entity -> entity.update(attributes.getName(), attributes.getProfileImagePath()))
                 .orElse(attributes.toEntity());
 
         return memberRepository.save(user);

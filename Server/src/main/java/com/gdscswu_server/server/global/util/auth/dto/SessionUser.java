@@ -1,10 +1,9 @@
-package com.gdscswu_server.server.config.auth.dto;
+package com.gdscswu_server.server.global.util.auth.dto;
 
 import com.gdscswu_server.server.domain.member.domain.Member;
 import lombok.Getter;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 @Getter
 public class SessionUser implements Serializable {
@@ -15,6 +14,6 @@ public class SessionUser implements Serializable {
     public SessionUser(Member member) {
         this.name = member.getName();
         this.email = member.getEmail();
-        this.profile_image = Arrays.toString(member.getProfile_image());
+        this.profile_image = member.getProfileImagePath();
     }
 }
