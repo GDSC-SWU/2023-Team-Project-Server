@@ -1,36 +1,45 @@
 package com.gdscswu_server.server.domain.member.domain;
 
+import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "Member")
 @Getter
-@Builder
+@NoArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
+    private String googleEmail;
+
+    @NotNull
     private String name;
 
-    private String email;
     private String major;
-    private Integer admission_year;
+    private Integer admissionYear;
     private String introduction;
-
-    @Lob
-    @Column
-    private byte[] profile_image;
+    private String email;
+    private String profileImagePath;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Builder
+    public Member(String googleEmail, String name, String profileImagePath) {
+        this.googleEmail = googleEmail;
+        this.name = name;
+        this.profileImagePath = profileImagePath;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -46,13 +55,12 @@ public class Member {
         return Objects.hash(id, name, email);
     }
 
-    public Member update(String name, String picture) {
+    public Member update(String name, String profileImagePath) {
         this.name = name;
-        this.profile_image = profile_image;
+        this.profileImagePath = profileImagePath;
 
         return this;
     }
-
 
 
     public String getRoleKey() {
