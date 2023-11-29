@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum MemberErrorCode implements ErrorCode {
+    ID_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "Id token required."),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "Login failed."),
+    INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid ID token."),
     ;
 
     private final HttpStatus httpStatus;

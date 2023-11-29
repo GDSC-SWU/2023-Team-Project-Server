@@ -26,7 +26,7 @@ public class Bookmark {
     private Member targetMember;
 
     @CreatedDate
-    private LocalDateTime published_at;
+    private LocalDateTime publishedAt;
 
     @Override
     public boolean equals(Object obj) {
