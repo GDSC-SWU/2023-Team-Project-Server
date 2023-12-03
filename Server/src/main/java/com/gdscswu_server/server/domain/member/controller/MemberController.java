@@ -2,6 +2,7 @@ package com.gdscswu_server.server.domain.member.controller;
 
 import com.gdscswu_server.server.domain.member.dto.GenerationResponseDto;
 import com.gdscswu_server.server.domain.member.dto.MemberResponseDto;
+import com.gdscswu_server.server.domain.member.dto.ProjectResponseDto;
 import com.gdscswu_server.server.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,5 +38,10 @@ public class MemberController {
     @GetMapping("/generation/{id}")
     public List<GenerationResponseDto> findByMemberId(@PathVariable Long id) {
         return memberService.findByMemberId(id);
+    }
+
+    @GetMapping("/project/{id}")
+    public List<ProjectResponseDto> findProjectByMemberId(@PathVariable Long id) {
+        return memberService.findProjectByMemberId(id);
     }
 }
