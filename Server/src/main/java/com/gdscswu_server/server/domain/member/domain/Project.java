@@ -21,6 +21,9 @@ public class Project {
     @NotNull
     private String title;
 
+    @NotNull
+    private Integer generation;
+
     private String type;
     private String part;
 
