@@ -34,7 +34,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<GenerationResponseDto> findByMemberId(Long id) {
+    public List<GenerationResponseDto> findGenerationByMemberId(Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
         if(optionalMember.isEmpty()) {
             throw new IllegalArgumentException("해당 멤버가 없습니다. id = " + id);

@@ -37,7 +37,7 @@ public class MemberController {
 
     @GetMapping("/generation/{id}")
     public List<GenerationResponseDto> findByMemberId(@PathVariable Long id) {
-        return memberService.findByMemberId(id);
+        return memberService.findGenerationByMemberId(id);
     }
 
     @GetMapping("/project/{id}")
