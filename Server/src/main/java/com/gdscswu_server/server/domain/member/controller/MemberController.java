@@ -30,7 +30,7 @@ public class MemberController {
     }
      */
 
-    @GetMapping("/info/{id}")
+    @GetMapping("/{id}")
     public MemberResponseDto findById(@PathVariable Long id) {
         return memberService.findById(id);
     }
