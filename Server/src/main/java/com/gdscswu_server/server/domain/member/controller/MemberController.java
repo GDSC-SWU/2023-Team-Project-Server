@@ -1,8 +1,11 @@
 package com.gdscswu_server.server.domain.member.controller;
 
+import com.gdscswu_server.server.domain.member.dto.MemberResponseDto;
 import com.gdscswu_server.server.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,4 +26,8 @@ public class MemberController {
     }
      */
 
+    @GetMapping("/info/{id}")
+    public MemberResponseDto findById(@PathVariable Long id) {
+        return memberService.findById(id);
+    }
 }
