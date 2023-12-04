@@ -18,8 +18,8 @@ import java.util.Map;
 public class EventController {
     private final AttendanceService attendanceService;
     @GetMapping("/{memberId}")
-    public ResponseEntity<List<Map<String, Object>>> getMemberAttendanceStatus(@PathVariable Long memberId) {
-        List<Map<String, Object>> attendanceStatus=attendanceService.getMemberAttendanceStatus(memberId);
+    public ResponseEntity<Map<String, List<Map<String, Object>>>> getMemberAttendanceStatus(@PathVariable Long memberId) {
+        Map<String, List<Map<String, Object>>> attendanceStatus=attendanceService.getMemberAttendanceStatus(memberId);
         return ResponseEntity.ok(DataResponseDto.of(attendanceStatus, 200).getData());
     }
 }
