@@ -33,16 +33,37 @@ public class Member {
     private Role role;
 
     @Builder
+    public Member(String name, String profileImagePath, String major, Integer admissionYear, String introduction, String email){
+        this.name=name;
+        this.profileImagePath=profileImagePath;
+        this.major=major;
+        this.admissionYear=admissionYear;
+        this.introduction=introduction;
+        this.email=email;
+
+    }
+
+    @Builder
     public Member(String googleEmail, String name, String profileImagePath) {
         this.googleEmail = googleEmail;
         this.name = name;
         this.profileImagePath = profileImagePath;
         this.role = Role.USER;
     }
+    public void update(String name, String profileImagePath, String major, Integer admissionYear, String introduction, String email){
+        this.name=name;
+        this.profileImagePath=profileImagePath;
+        this.major=major;
+        this.admissionYear=admissionYear;
+        this.introduction=introduction;
+        this.email=email;
+
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
+
         if (!(obj instanceof Member member)) return false;
 
         return Objects.equals(this.name, member.getName()) &&
