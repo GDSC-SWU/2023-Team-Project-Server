@@ -5,8 +5,10 @@ import com.gdscswu_server.server.domain.member.domain.Generation;
 import com.gdscswu_server.server.domain.member.domain.GenerationRepository;
 import com.gdscswu_server.server.domain.member.domain.Member;
 import com.gdscswu_server.server.domain.member.domain.MemberRepository;
+import com.gdscswu_server.server.domain.member.dto.LoginResponseDto;
 import com.gdscswu_server.server.domain.model.Role;
 import com.gdscswu_server.server.domain.networking.dto.MemberListResponseDto;
+import com.gdscswu_server.server.global.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.apache.catalina.User;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +51,8 @@ class NetworkControllerTest {
     private MemberRepository memberRepository;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private JwtUtil jwtUtil;
     @Test
     @DisplayName("전체 멤버 조회 테스트")
     public void FindAllMembers() throws Exception{
@@ -59,12 +63,14 @@ class NetworkControllerTest {
                 .profileImagePath("path")
                 .build());
 
-        List<Generation> memberList = IntStream.range(1,31)
+        LoginResponseDto loginResponseDto = jwtUtil.generateTokens(savedMember);
+
+        List<Generation> memberList = IntStream.range(0,5)
                 .mapToObj(i ->
                         Generation.builder()
                                 .member(savedMember)
-                                .number(1+i)
-                                .department("server"+i)
+                                .number(1)
+                                .department("server")
                                 .level("core"+i)
                                 .build()
                 )
@@ -76,9 +82,10 @@ class NetworkControllerTest {
         // then
         String url="http://localhost:" + port + "/api/v1/network";
         mockMvc.perform(get(url)
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON).header("Authorization","Bearer "+loginResponseDto.getAccessToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("&[0].number").value(1));
+                .andExpect(jsonPath("$[0].level").value("core0"))
+                .andDo(print());
 
     }
 }

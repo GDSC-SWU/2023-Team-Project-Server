@@ -28,7 +28,7 @@ public class NetworkService {
                     .map(MemberListResponseDto::new)
                     .collect(Collectors.toList());
 
-            return ResponseEntity.ok("멤버 리스트 조회 성공" + memberList);
+            return ResponseEntity.ok(memberList);
         } catch (Exception e) {
             // 예외가 발생한 경우 클라이언트에게 적절한 응답을 보내줌
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
