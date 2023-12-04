@@ -2,7 +2,9 @@ package com.gdscswu_server.server.domain.member.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -26,6 +28,13 @@ public class Project {
 
     private String type;
     private String part;
+
+    @Builder
+    public Project(Member member, String title, Integer generation) {
+        this.member = member;
+        this.title = title;
+        this.generation = generation;
+    }
 
     @Override
     public boolean equals(Object obj) {
