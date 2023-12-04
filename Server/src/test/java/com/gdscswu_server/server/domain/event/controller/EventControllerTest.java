@@ -2,7 +2,12 @@ package com.gdscswu_server.server.domain.event.controller;
 
 
 import com.gdscswu_server.server.ServerApplication;
+import com.gdscswu_server.server.domain.event.domain.Event;
+import com.gdscswu_server.server.domain.event.domain.EventRepository;
 import com.gdscswu_server.server.domain.event.service.EventService;
+import com.gdscswu_server.server.domain.member.domain.Member;
+import com.gdscswu_server.server.domain.member.domain.MemberRepository;
+import jakarta.persistence.Entity;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +36,12 @@ public class EventControllerTest {
     private TestRestTemplate restTemplate;
 
     @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    EventRepository eventRepository;
+
+    @Autowired
     EventService eventService;
 
     @Autowired
@@ -40,7 +51,8 @@ public class EventControllerTest {
     @Test
     @DisplayName("회원 출석 현황 테스트 성공")
     public void get_출석현황() throws Exception {
-
+        Member member=Member.builder().googleEmail("temp@gmail").name("swuni").profileImagePath("/path/file1").build();
+        memberRepository.save(member);
 
     }
 
