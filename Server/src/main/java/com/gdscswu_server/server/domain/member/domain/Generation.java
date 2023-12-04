@@ -2,6 +2,7 @@ package com.gdscswu_server.server.domain.member.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -26,6 +27,14 @@ public class Generation {
 
     @NotNull
     private String level;
+
+    @Builder
+    public Generation(Member member, Integer number, String department, String level) {
+        this.member = member;
+        this.number = number;
+        this.department = department;
+        this.level = level;
+    }
 
     @Override
     public boolean equals(Object obj) {
