@@ -11,6 +11,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "Project")
 @Getter
+@NoArgsConstructor
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
