@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ProfileRequestDto {
+public class ProfileSaveRequestDto {  //프로필 정보를 저장할 dto
 
     private String name;
     private String profileImagePath;
@@ -17,7 +17,7 @@ public class ProfileRequestDto {
     private String email;
 
     @Builder
-    public ProfileRequestDto(String name, String profileImagePath, String major, Integer admissionYear, String introduction, String email){
+    public ProfileSaveRequestDto(String name, String profileImagePath, String major, Integer admissionYear, String introduction, String email){
         this.name=name;
         this.profileImagePath=profileImagePath;
         this.major=major;
