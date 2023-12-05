@@ -43,21 +43,12 @@ public class Member {
 
     }
 
-    @Builder
+    @Builder(builderMethodName = "googleBuilder")
     public Member(String googleEmail, String name, String profileImagePath) {
         this.googleEmail = googleEmail;
         this.name = name;
         this.profileImagePath = profileImagePath;
         this.role = Role.USER;
-    }
-    public void update(String name, String profileImagePath, String major, Integer admissionYear, String introduction, String email){
-        this.name=name;
-        this.profileImagePath=profileImagePath;
-        this.major=major;
-        this.admissionYear=admissionYear;
-        this.introduction=introduction;
-        this.email=email;
-
     }
 
     @Override
