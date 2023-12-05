@@ -1,8 +1,6 @@
 package com.gdscswu_server.server.domain.member.controller;
 
-import com.gdscswu_server.server.domain.member.dto.GenerationResponseDto;
 import com.gdscswu_server.server.domain.member.dto.MemberResponseDto;
-import com.gdscswu_server.server.domain.member.dto.ProjectResponseDto;
 import com.gdscswu_server.server.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -33,15 +29,5 @@ public class MemberController {
     @GetMapping("/{id}")
     public MemberResponseDto findById(@PathVariable Long id) {
         return memberService.findById(id);
-    }
-
-    @GetMapping("/generation/{id}")
-    public List<GenerationResponseDto> findGenerationByMemberId(@PathVariable Long id) {
-        return memberService.findGenerationByMemberId(id);
-    }
-
-    @GetMapping("/project/{id}")
-    public List<ProjectResponseDto> findProjectByMemberId(@PathVariable Long id) {
-        return memberService.findProjectByMemberId(id);
     }
 }

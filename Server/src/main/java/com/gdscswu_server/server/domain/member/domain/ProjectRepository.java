@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    List<Project> findAllByMemberOrderById(Member member);
+    List<Project> findAllByMemberOrderByGenerationDesc(Member member);
 }

@@ -22,7 +22,7 @@ public class MemberService {
     private final GenerationRepository generationRepository;
     private final ProjectRepository projectRepository;
 
-    // Get Member Information
+    // Read Member Information(Member Info, Generation, Project)
     @Transactional(readOnly = true)
     public MemberResponseDto findById(Long id) {
         Optional<Member> optionalMember = memberRepository.findById(id);
@@ -30,30 +30,14 @@ public class MemberService {
             throw new IllegalArgumentException("해당 멤버가 없습니다. id = " + id);
         }
 
-        return new MemberResponseDto(optionalMember.get());
-    }
-
-    @Transactional(readOnly = true)
-    public List<GenerationResponseDto> findGenerationByMemberId(Long id) {
-        Optional<Member> optionalMember = memberRepository.findById(id);
-        if(optionalMember.isEmpty()) {
-            throw new IllegalArgumentException("해당 멤버가 없습니다. id = " + id);
-        }
-
-        return generationRepository.findAllByMemberOrderByNumberDesc(optionalMember.get()).stream()
-                .map(GenerationResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<ProjectResponseDto> findProjectByMemberId(Long id) {
-        Optional<Member> optionalMember = memberRepository.findById(id);
-        if(optionalMember.isEmpty()) {
-            throw new IllegalArgumentException("해당 멤버가 없습니다. id = " + id);
-        }
-
-        return projectRepository.findAllByMemberOrderById(optionalMember.get()).stream()
+        List<GenerationResponseDto> generationResponseDtoList =
+                generationRepository.findAllByMemberOrderByNumberDesc(optionalMember.get()).stream()
+                    .map(GenerationResponseDto::new)
+                    .collect(Collectors.toList());
+        List<ProjectResponseDto> projectResponseDtoList = projectRepository.findAllByMemberOrderByGenerationDesc(optionalMember.get()).stream()
                 .map(ProjectResponseDto::new)
                 .collect(Collectors.toList());
+
+        return new MemberResponseDto(optionalMember.get(), generationResponseDtoList, projectResponseDtoList);
     }
 }
