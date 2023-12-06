@@ -1,11 +1,12 @@
 package com.gdscswu_server.server.domain.networking.controller;
 
+import com.gdscswu_server.server.domain.networking.dto.FilterOptionsRequestDto;
 import com.gdscswu_server.server.domain.networking.dto.MemberResponseDto;
 import com.gdscswu_server.server.domain.networking.service.NetworkService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -20,7 +21,10 @@ public class NetworkController {
         return networkService.findAllMembers();
     }
 
-    // 특정 조건 멤버 리스트 응답
-
+    // 북마크 설정
+    @PostMapping("/bookmark/{memberId}")
+    public List<MemberResponseDto> setBookmark(@PathVariable Long memberId){
+        return networkService.bookmarkMember(memberId);
+    }
 
 }

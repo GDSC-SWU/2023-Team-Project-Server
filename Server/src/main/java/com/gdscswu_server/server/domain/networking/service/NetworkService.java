@@ -1,10 +1,14 @@
 package com.gdscswu_server.server.domain.networking.service;
 
 import com.gdscswu_server.server.domain.member.domain.*;
+import com.gdscswu_server.server.domain.networking.domain.Bookmark;
 import com.gdscswu_server.server.domain.networking.domain.BookmarkRepository;
+import com.gdscswu_server.server.domain.networking.dto.FilterOptionsRequestDto;
 import com.gdscswu_server.server.domain.networking.dto.GenerationResponseDto;
 import com.gdscswu_server.server.domain.networking.dto.MemberResponseDto;
 import com.gdscswu_server.server.domain.networking.dto.ProjectResponseDto;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +25,7 @@ public class NetworkService {
     public final ProjectRepository projectRepository;
     public final BookmarkRepository bookmarkRepository;
 
-
+    @Transactional
     public List<MemberResponseDto> findAllMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
@@ -29,8 +33,24 @@ public class NetworkService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<MemberResponseDto> bookmarkMember(Long memberIdToBookmark) {
+        Member memberToBookmark = memberRepository.findById(memberIdToBookmark)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberIdToBookmark));
+
+        // Check if the bookmark already exists
+        boolean hasBookmark = hasBookmark(memberIdToBookmark);
+        if (hasBookmark) {
+            bookmarkRepository.deleteByMemberId(memberIdToBookmark);
+        } else {
+            bookmarkRepository.save(new Bookmark(memberToBookmark, memberToBookmark));
+        }
+
+        return findAllMembers();
+    }
+    @Transactional
     private MemberResponseDto createMemberResponseDto(Member member) {
-        boolean bookmark = false; // You may set this based on your logic
+        boolean bookmark = hasBookmark(member.getId());
         List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member);
         return MemberResponseDto.builder()
                 .member(member)
@@ -39,6 +59,12 @@ public class NetworkService {
                 .build();
     }
 
+    @Transactional
+    private boolean hasBookmark(Long memberId) {
+        return bookmarkRepository.existsByMemberId(memberId);
+    }
+
+    @Transactional
     private List<GenerationResponseDto> createGenerationResponseDtoList(Member member) {
         List<Generation> generations = generationRepository.findByMember(member);
         return generations.stream()
@@ -51,7 +77,7 @@ public class NetworkService {
                 })
                 .collect(Collectors.toList());
     }
-
+    @Transactional
     private List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation) {
         List<Project> projects = projectRepository.findByMemberAndGeneration(member, generation);
 
@@ -62,26 +88,5 @@ public class NetworkService {
                 .map(ProjectResponseDto::new)
                 .collect(Collectors.toList());
     }
-
-
-    /*@Transactional(readOnly = true)
-    public List<MemberListResponseDto> findFilteredMembers(String department, String part, String level) {
-        // 필요한 로직을 구현해 필터링된 멤버를 가져오세요.
-        List<Member> filteredMembers = // ...
-
-        return mapToMemberListResponseDtoList(filteredMembers, false); // 북마크 값은 여기서 고정으로 설정
-    }*/
-
-
-/*    @Transactional
-    public ResponseEntity<Object> addBookmark(){
-
-    }
-
-    @Transactional
-    public ResponseEntity<Object> removeBookmark(){
-
-    }*/
-
 
 }
