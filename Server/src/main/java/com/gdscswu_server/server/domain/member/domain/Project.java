@@ -22,6 +22,11 @@ public class Project {
     @NotNull
     private Member member;
 
+    @ManyToOne
+    @JoinColumn(name = "generation_id")
+    @NotNull
+    private Generation generation;
+
     @NotNull
     private String title;
 
@@ -29,8 +34,9 @@ public class Project {
     private String part;
 
     @Builder
-    public Project(Member member, String title, String part) {
-        this.member = member;
+    public Project(Generation generation,Member member, String title, String part) {
+        this.generation = generation;
+        this.member=member;
         this.title = title;
         this.part = part;
     }

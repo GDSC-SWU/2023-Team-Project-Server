@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    List<Project> findByMember(Member member);
-    Optional<Project> findByTitle(String title);
+    List<Project> findByMemberAndGeneration(Member member, Generation generation);
 
 }

@@ -62,36 +62,6 @@ class NetworkControllerTest {
                 .profileImagePath("path")
                 .build());
 
-        Project project1 = projectRepository.save(Project.builder()
-                .title("김슈니의 1기 첫번째 프젝")
-                .member(member1)
-                .part("PM")
-                .build());
-
-        Project project2 = projectRepository.save(Project.builder()
-                .title("김슈니의 1기 첫번째 프젝")
-                .member(member1)
-                .part("Front")
-                .build());
-
-        Project project3 = projectRepository.save(Project.builder()
-                .title("김슈니의 1기 두번째 프젝")
-                .member(member1)
-                .part("Front")
-                .build());
-
-        Project project4 = projectRepository.save(Project.builder()
-                .title("김슈니의 2기 첫번째 프젝")
-                .member(member1)
-                .part("Back")
-                .build());
-
-        Project project5 = projectRepository.save(Project.builder()
-                .title("박슈니의 2기 첫번째 프젝")
-                .member(member2)
-                .part("Back")
-                .build());
-
         Generation generation1=generationRepository.save(Generation.builder()
                 .member(member1)
                 .number(1)
@@ -113,6 +83,42 @@ class NetworkControllerTest {
                 .level("Member")
                 .build());
 
+        Project project1 = projectRepository.save(Project.builder()
+                .title("김슈니의 1기 첫번째 프젝")
+                .generation(generation1)
+                .member(member1)
+                .part("PM")
+                .build());
+
+        Project project2 = projectRepository.save(Project.builder()
+                .title("김슈니의 1기 첫번째 프젝")
+                .generation(generation1)
+                .member(member1)
+                .part("Front")
+                .build());
+
+        Project project3 = projectRepository.save(Project.builder()
+                .title("김슈니의 1기 두번째 프젝")
+                .generation(generation1)
+                .member(member1)
+                .part("Front")
+                .build());
+
+        Project project4 = projectRepository.save(Project.builder()
+                .title("김슈니의 2기 첫번째 프젝")
+                .generation(generation2)
+                .member(member1)
+                .part("Back")
+                .build());
+
+        Project project5 = projectRepository.save(Project.builder()
+                .title("박슈니의 2기 첫번째 프젝")
+                .generation(generation3)
+                .member(member2)
+                .part("Back")
+                .build());
+
+
         ProjectResponseDto partListResponseDto1 = ProjectResponseDto.builder()
                 .projects(project1)
                 .build();
@@ -131,28 +137,29 @@ class NetworkControllerTest {
 
         GenerationResponseDto generationResponseDto1 = GenerationResponseDto.builder()
                 .generation(generation1)
+                .projectResponseDtoList(List.of(partListResponseDto1,partListResponseDto2,partListResponseDto3))
                 .build();
 
         GenerationResponseDto generationResponseDto2 = GenerationResponseDto.builder()
                 .generation(generation2)
+                .projectResponseDtoList(List.of(partListResponseDto4))
                 .build();
 
         GenerationResponseDto generationResponseDto3 = GenerationResponseDto.builder()
                 .generation(generation3)
+                .projectResponseDtoList(List.of(partListResponseDto5))
                 .build();
 
         MemberResponseDto memberResponseDto1 = MemberResponseDto.builder()
                 .member(member1)
                 .bookmark(false)
                 .generationResponseDtoList(List.of(generationResponseDto1,generationResponseDto2))
-                .projectResponseDtoList(List.of(partListResponseDto1,partListResponseDto2,partListResponseDto3,partListResponseDto4))
                 .build();
 
         MemberResponseDto memberResponseDto2 = MemberResponseDto.builder()
                 .member(member2)
                 .bookmark(true)
                 .generationResponseDtoList(List.of(generationResponseDto3))
-                .projectResponseDtoList(List.of(partListResponseDto5))
                 .build();
 
         // When

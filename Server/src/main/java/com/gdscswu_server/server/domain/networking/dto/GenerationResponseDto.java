@@ -11,11 +11,13 @@ public class GenerationResponseDto {
     private Integer number; // 기수 (1기, 2기...)
     private String department; // 부서 (안드, UX/UI...)
     private String level; // 레벨 (코어, 리드...)
+    private List<ProjectResponseDto> projectResponseDtoList;
     @Builder
-    public GenerationResponseDto(Generation generation){
-        this.number=generation.getNumber();
-        this.department=generation.getDepartment();
-        this.level=generation.getLevel();
+    public GenerationResponseDto(Generation generation, List<ProjectResponseDto> projectResponseDtoList) {
+        this.number = generation.getNumber();
+        this.department = generation.getDepartment();
+        this.level = generation.getLevel();
+        this.projectResponseDtoList = projectResponseDtoList;
     }
 
 }

@@ -8,7 +8,9 @@ import com.gdscswu_server.server.domain.networking.dto.ProjectResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -20,37 +22,46 @@ public class NetworkService {
     public final BookmarkRepository bookmarkRepository;
 
 
-    private List<GenerationResponseDto> createGenerationResponseDtoList(Member member) {
-        List<Generation> generations = generationRepository.findByMember(member);
-        return generations.stream()
-                .map(GenerationResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-    private List<ProjectResponseDto> createProjectResponseDtoList(Member member) {
-        List<Project> projects = projectRepository.findByMember(member);
-        return projects.stream()
-                .map(ProjectResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
     public List<MemberResponseDto> findAllMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
-                .map(member -> {
-                    List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member);
-                    List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member);
+                .map(this::createMemberResponseDto)
+                .collect(Collectors.toList());
+    }
 
-                    return MemberResponseDto.builder()
-                            .member(member)
-                            .bookmark(false)
-                            .generationResponseDtoList(generationResponseDtoList)
+    private MemberResponseDto createMemberResponseDto(Member member) {
+        boolean bookmark = false; // You may set this based on your logic
+        List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member);
+        return MemberResponseDto.builder()
+                .member(member)
+                .bookmark(bookmark)
+                .generationResponseDtoList(generationResponseDtoList)
+                .build();
+    }
+
+    private List<GenerationResponseDto> createGenerationResponseDtoList(Member member) {
+        List<Generation> generations = generationRepository.findByMember(member);
+        return generations.stream()
+                .map(generation -> {
+                    List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member, generation);
+                    return GenerationResponseDto.builder()
+                            .generation(generation)
                             .projectResponseDtoList(projectResponseDtoList)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
+    private List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation) {
+        List<Project> projects = projectRepository.findByMemberAndGeneration(member, generation);
+
+        Set<String> existingParts = new HashSet<>();
+
+        return projects.stream()
+                .filter(project -> existingParts.add(project.getPart())) // 중복된 part가 없는 경우만 필터링
+                .map(ProjectResponseDto::new)
+                .collect(Collectors.toList());
+    }
 
 
     /*@Transactional(readOnly = true)

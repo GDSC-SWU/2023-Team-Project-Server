@@ -16,17 +16,15 @@ public class MemberResponseDto {
     private String profileImagePath; // 프로필 사진
     private boolean bookmark; // 북마크 저장 여부
     private List<GenerationResponseDto> generationResponseDtoList;
-    private List<ProjectResponseDto> projectResponseDtoList;
 
     @Builder
-    public MemberResponseDto(Member member, boolean bookmark, List<GenerationResponseDto> generationResponseDtoList,  List<ProjectResponseDto> projectResponseDtoList){
-        this.name=member.getName();
-        this.profileImagePath=member.getProfileImagePath();
-        this.major=member.getMajor();
-        this.admissionYear=member.getAdmissionYear();
-        this.bookmark=bookmark;
-        this.generationResponseDtoList= generationResponseDtoList;
-        this.projectResponseDtoList = projectResponseDtoList;
+    public MemberResponseDto(Member member, boolean bookmark, List<GenerationResponseDto> generationResponseDtoList) {
+        this.name = member.getName();
+        this.profileImagePath = member.getProfileImagePath();
+        this.major = member.getMajor();
+        this.admissionYear = member.getAdmissionYear();
+        this.bookmark = bookmark;
+        this.generationResponseDtoList = generationResponseDtoList;
     }
 
 
