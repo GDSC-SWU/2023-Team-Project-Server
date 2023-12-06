@@ -3,6 +3,7 @@ package com.gdscswu_server.server.domain.networking.dto;
 import com.gdscswu_server.server.domain.member.domain.Generation;
 import com.gdscswu_server.server.domain.member.domain.Member;
 import com.gdscswu_server.server.domain.member.domain.Project;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
@@ -14,12 +15,12 @@ public class MemberDetailResponseDto {
     private String department; // 부서 (안드, UX/UI...)
     private String level; // 레벨 (코어, 리드...)
     private List<String> part; // 솔챌 파트 (피엠, 디자인...)
-
-    public MemberDetailResponseDto(Generation generation, List<Project> project){
+    @Builder
+    public MemberDetailResponseDto(Generation generation, List<Project> projects){
         this.number=generation.getNumber();
         this.department=generation.getDepartment();
         this.level=generation.getLevel();
-        this.part=project.stream()
+        this.part=projects.stream()
                 .map(Project::getPart)
                 .collect(Collectors.toList());
     }

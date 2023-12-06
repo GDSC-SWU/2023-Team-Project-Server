@@ -2,6 +2,7 @@ package com.gdscswu_server.server.domain.networking.dto;
 
 import com.gdscswu_server.server.domain.member.domain.Member;
 import com.gdscswu_server.server.domain.networking.domain.Bookmark;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class MemberListResponseDto {
     private boolean bookmark; // 북마크 저장 여부
     private List<MemberDetailResponseDto> memberDetails;
 
+    @Builder
     public MemberListResponseDto(Member member, boolean bookmark, List<MemberDetailResponseDto> memberDetailResponseDtoList){
 
         this.name=member.getName();

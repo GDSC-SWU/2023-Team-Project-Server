@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "Generation")
 @Getter
+@NoArgsConstructor
 public class Generation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
