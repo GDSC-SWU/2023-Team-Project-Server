@@ -2,14 +2,11 @@ package com.gdscswu_server.server.domain.networking.service;
 
 import com.gdscswu_server.server.domain.member.domain.*;
 import com.gdscswu_server.server.domain.networking.domain.BookmarkRepository;
-import com.gdscswu_server.server.domain.networking.dto.MemberDetailResponseDto;
-import com.gdscswu_server.server.domain.networking.dto.MemberListResponseDto;
-import com.gdscswu_server.server.domain.networking.dto.MemberListUpdateRequestDto;
+import com.gdscswu_server.server.domain.networking.dto.GenerationResponseDto;
+import com.gdscswu_server.server.domain.networking.dto.MemberResponseDto;
+import com.gdscswu_server.server.domain.networking.dto.ProjectResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,29 +19,39 @@ public class NetworkService {
     public final ProjectRepository projectRepository;
     public final BookmarkRepository bookmarkRepository;
 
-    public List<MemberListResponseDto> findAllMembers() {
-        List<Member> members = memberRepository.findAll();
-        return mapToMemberListResponseDtoList(members, false);
 
+    private List<GenerationResponseDto> createGenerationResponseDtoList(Member member) {
+        List<Generation> generations = generationRepository.findByMember(member);
+        return generations.stream()
+                .map(GenerationResponseDto::new)
+                .collect(Collectors.toList());
     }
 
-    private  List<MemberListResponseDto> mapToMemberListResponseDtoList(List<Member> members, boolean bookmark) {
+    private List<ProjectResponseDto> createProjectResponseDtoList(Member member) {
+        List<Project> projects = projectRepository.findByMember(member);
+        return projects.stream()
+                .map(ProjectResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<MemberResponseDto> findAllMembers() {
+        List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(member -> {
-                    List<MemberDetailResponseDto> memberDetailResponseDtoList = getMemberDetails(member);
-                    return new MemberListResponseDto(member, bookmark, memberDetailResponseDtoList);
+                    List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member);
+                    List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member);
+
+                    return MemberResponseDto.builder()
+                            .member(member)
+                            .bookmark(false)
+                            .generationResponseDtoList(generationResponseDtoList)
+                            .projectResponseDtoList(projectResponseDtoList)
+                            .build();
                 })
                 .collect(Collectors.toList());
     }
 
-    private List<MemberDetailResponseDto> getMemberDetails(Member member) {
-        List<Generation> generations = generationRepository.findByMember(member);
-        List<Project> projects = projectRepository.findByMember(member);
 
-        return generations.stream()
-                .map(generation -> new MemberDetailResponseDto(generation, projects))
-                .collect(Collectors.toList());
-    }
 
     /*@Transactional(readOnly = true)
     public List<MemberListResponseDto> findFilteredMembers(String department, String part, String level) {
