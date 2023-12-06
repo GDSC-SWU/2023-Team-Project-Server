@@ -1,13 +1,14 @@
 package com.gdscswu_server.server.domain.networking.service;
 
-import com.gdscswu_server.server.domain.member.domain.Generation;
-import com.gdscswu_server.server.domain.member.domain.GenerationRepository;
+import com.gdscswu_server.server.domain.member.domain.*;
+import com.gdscswu_server.server.domain.networking.domain.BookmarkRepository;
+import com.gdscswu_server.server.domain.networking.dto.MemberDetailResponseDto;
 import com.gdscswu_server.server.domain.networking.dto.MemberListResponseDto;
+import com.gdscswu_server.server.domain.networking.dto.MemberListUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.gdscswu_server.server.domain.member.domain.MemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,41 +19,51 @@ import java.util.stream.Collectors;
 public class NetworkService {
     public final MemberRepository memberRepository;
     public final GenerationRepository generationRepository;
+    public final ProjectRepository projectRepository;
+    public final BookmarkRepository bookmarkRepository;
 
-    // 멤버 보여주기
-    @Transactional (readOnly = true)
-    public ResponseEntity<Object> findAllMembers() {
-        try {
-            // member 찾아서 리스트로 수집하여 반환
-            List<MemberListResponseDto> memberList = generationRepository.findAll().stream()
-                    .map(MemberListResponseDto::new)
-                    .collect(Collectors.toList());
+    public List<MemberListResponseDto> findAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        return mapToMemberListResponseDtoList(members, false);
 
-            return ResponseEntity.ok(memberList);
-        } catch (Exception e) {
-            // 예외가 발생한 경우 클라이언트에게 적절한 응답을 보내줌
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("멤버 리스트 조회 실패" + e.getMessage());
-
-        }
     }
 
+    private  List<MemberListResponseDto> mapToMemberListResponseDtoList(List<Member> members, boolean bookmark) {
+        return members.stream()
+                .map(member -> {
+                    List<MemberDetailResponseDto> memberDetailResponseDtoList = getMemberDetails(member);
+                    return new MemberListResponseDto(member, bookmark, memberDetailResponseDtoList);
+                })
+                .collect(Collectors.toList());
+    }
 
-    // 유저(나) 보여주기
-//    @Transactional (readOnly = true)
-//    public ResponseEntity<Object> findByUser (Long userId){
-//        try{
-//            // 로그인 한 유저 (나) 생성될 때 담았던 id 값으로 디비에서 "나" 찾아오기
-//            Generation user = generationRepository.findById(userId)
-//                    .orElseThrow(() -> new IllegalArgumentException());
-//
-//            UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(user);
-//            return ResponseEntity.ok("유저 조회 성공 "+ userProfileResponseDto);
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body("유저 조회 실패: " + e.getMessage());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("서버 오류: " + e.getMessage());
-//        }
-//    }
+    private List<MemberDetailResponseDto> getMemberDetails(Member member) {
+        List<Generation> generations = generationRepository.findByMember(member);
+        List<Project> projects = projectRepository.findByMember(member);
+
+        return generations.stream()
+                .map(generation -> new MemberDetailResponseDto(generation, projects))
+                .collect(Collectors.toList());
+    }
+
+    /*@Transactional(readOnly = true)
+    public List<MemberListResponseDto> findFilteredMembers(String department, String part, String level) {
+        // 필요한 로직을 구현해 필터링된 멤버를 가져오세요.
+        List<Member> filteredMembers = // ...
+
+        return mapToMemberListResponseDtoList(filteredMembers, false); // 북마크 값은 여기서 고정으로 설정
+    }*/
+
+
+/*    @Transactional
+    public ResponseEntity<Object> addBookmark(){
+
+    }
+
+    @Transactional
+    public ResponseEntity<Object> removeBookmark(){
+
+    }*/
+
+
 }

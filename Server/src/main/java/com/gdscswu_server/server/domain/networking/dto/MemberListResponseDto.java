@@ -1,33 +1,31 @@
 package com.gdscswu_server.server.domain.networking.dto;
 
-import com.gdscswu_server.server.domain.member.domain.Generation;
 import com.gdscswu_server.server.domain.member.domain.Member;
+import com.gdscswu_server.server.domain.networking.domain.Bookmark;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@Setter
 public class MemberListResponseDto {
-    private Long id;
     private String name; // 이름
-    private String profileImagePath; // 프로필 이미지
-    private String major; // 전공
+    private String major; // 학과
     private Integer admissionYear; // 학번
-    private Integer number; // 기수 (1기, 2기...)
-    private String department; // 부서 (안드, UX/UI...)
-    private String level; // 레벨 (코어, 리드...)
-    private String part; // 파트 (피엠, 디자인...)
+    private String profileImagePath; // 프로필 사진
+    private boolean bookmark; // 북마크 저장 여부
+    private List<MemberDetailResponseDto> memberDetails;
 
+    public MemberListResponseDto(Member member, boolean bookmark, List<MemberDetailResponseDto> memberDetailResponseDtoList){
 
-    public MemberListResponseDto(Generation generation){
-        this.id=generation.getMember().getId();
-        this.name=generation.getMember().getName();
-        this.profileImagePath=generation.getMember().getProfileImagePath();
-        this.major=generation.getMember().getMajor();
-        this.admissionYear=generation.getMember().getAdmissionYear();
-        this.number=generation.getNumber();
-        this.department=generation.getDepartment();
-        this.level=generation.getLevel();
-        //this.part=generation.
+        this.name=member.getName();
+        this.profileImagePath=member.getProfileImagePath();
+        this.major=member.getMajor();
+        this.admissionYear=member.getAdmissionYear();
+        this.bookmark=bookmark;
+        this.memberDetails=memberDetailResponseDtoList;
     }
+
+
 }
