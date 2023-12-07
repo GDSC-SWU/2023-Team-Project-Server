@@ -5,6 +5,7 @@ import com.gdscswu_server.server.domain.member.domain.*;
 import com.gdscswu_server.server.domain.member.dto.LoginResponseDto;
 import com.gdscswu_server.server.domain.networking.domain.Bookmark;
 import com.gdscswu_server.server.domain.networking.domain.BookmarkRepository;
+import com.gdscswu_server.server.domain.networking.dto.FilterOptionsRequestDto;
 import com.gdscswu_server.server.domain.networking.dto.GenerationResponseDto;
 import com.gdscswu_server.server.domain.networking.dto.MemberResponseDto;
 import com.gdscswu_server.server.domain.networking.dto.ProjectResponseDto;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,8 +55,8 @@ class NetworkControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Test
-    @DisplayName("전체 멤버 조회 테스트")
-    public void findAllMembers() throws Exception{
+    @DisplayName("전체 + 필터링 멤버 조회 테스트")
+    public void findFilteredMembers() throws Exception{
         // Given
         Member member1 = memberRepository.save(Member.builder()
                 .googleEmail("abc@abc.com")
@@ -124,70 +126,40 @@ class NetworkControllerTest {
                 .part("Back")
                 .build());
 
+        // 예시로 몇 가지 값을 할당
+        final List<String> departments = Arrays.asList("Android", "Server");
+        final List<String> parts = Arrays.asList("PM", "Back");
+        final List<String> levels = Arrays.asList("Core");
 
-      /*  ProjectResponseDto partListResponseDto1 = ProjectResponseDto.builder()
-                .projects(project1)
+        FilterOptionsRequestDto filterOptionsRequestDto= FilterOptionsRequestDto.builder()
+                .parts(departments)
+                .departments(parts)
+                .levels(levels)
                 .build();
-        ProjectResponseDto partListResponseDto2 = ProjectResponseDto.builder()
-                .projects(project2)
-                .build();
-        ProjectResponseDto partListResponseDto3 = ProjectResponseDto.builder()
-                .projects(project3)
-                .build();
-        ProjectResponseDto partListResponseDto4 = ProjectResponseDto.builder()
-                .projects(project4)
-                .build();
-        ProjectResponseDto partListResponseDto5 = ProjectResponseDto.builder()
-                .projects(project5)
-                .build();
-
-        GenerationResponseDto generationResponseDto1 = GenerationResponseDto.builder()
-                .generation(generation1)
-                .projectResponseDtoList(List.of(partListResponseDto1,partListResponseDto2,partListResponseDto3))
-                .build();
-
-        GenerationResponseDto generationResponseDto2 = GenerationResponseDto.builder()
-                .generation(generation2)
-                .projectResponseDtoList(List.of(partListResponseDto4))
-                .build();
-
-        GenerationResponseDto generationResponseDto3 = GenerationResponseDto.builder()
-                .generation(generation3)
-                .projectResponseDtoList(List.of(partListResponseDto5))
-                .build();
-
-        MemberResponseDto memberResponseDto1 = MemberResponseDto.builder()
-                .member(member1)
-                .bookmark(false)
-                .generationResponseDtoList(List.of(generationResponseDto1,generationResponseDto2))
-                .build();
-
-        MemberResponseDto memberResponseDto2 = MemberResponseDto.builder()
-                .member(member2)
-                .bookmark(true)
-                .generationResponseDtoList(List.of(generationResponseDto3))
-                .build();*/
-
 
         // When
         // 김슈니 박슈니 전부 저장
         generationRepository.saveAll(List.of(generation1, generation2, generation3));
         projectRepository.saveAll(List.of(project1, project2, project3, project4, project5));
         memberRepository.saveAll(List.of(member1,member2));
+        // 북마크는 김슈니만 되어있는 상태
         bookmarkRepository.save(new Bookmark(member1, member1));
 
         // then
         String url = "http://localhost:" + port + "/api/v1/network";
         LoginResponseDto loginResponseDto = jwtUtil.generateTokens(member1);
 
-        mockMvc.perform(get(url)
-                        .contentType(APPLICATION_JSON).header("Authorization", "Bearer " + loginResponseDto.getAccessToken()))
+        mockMvc.perform(post(url)
+                        .contentType(APPLICATION_JSON).header("Authorization", "Bearer " + loginResponseDto.getAccessToken())
+                .content(new ObjectMapper().writeValueAsString(filterOptionsRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[1].name").value("김슈니"))
                 //.andExpect(jsonPath("$[1].memberDetails[0].partList[0].part[0]").value("PM"))
                 //.andExpect(jsonPath("$[1].memberDetails[0].partList[1].part[0]").value("Front"))
                 .andDo(print());
     }
+
+
 
     @Test
     @DisplayName("멤버 북마크 기능 설정 테스트")
@@ -205,7 +177,7 @@ class NetworkControllerTest {
                 .level("Member")
                 .build());
         Project project1 = projectRepository.save(Project.builder()
-                .title("김슈니의 1기 첫번째 프젝")
+                .title("김우동의 프젝")
                 .generation(generation1)
                 .member(member1)
                 .part("PM")
@@ -245,7 +217,7 @@ class NetworkControllerTest {
                 .level("Member")
                 .build());
         Project project1 = projectRepository.save(Project.builder()
-                .title("김슈니의 1기 첫번째 프젝")
+                .title("김우동의 프젝")
                 .generation(generation1)
                 .member(member1)
                 .part("PM")

@@ -27,20 +27,70 @@ public class NetworkService {
     public final BookmarkRepository bookmarkRepository;
 
     @Transactional
-    public ResponseEntity<Object> findAllMembers() {
+    public ResponseEntity<Object> findAllMembers(FilterOptionsRequestDto filterOptionsRequestDto) {
         try {
-            List<Member> members = memberRepository.findAll();
+                List<Member> members = memberRepository.findAll();
 
-            List<MemberResponseDto> memberResponseDtos = members.stream()
-                    .map(this::createMemberResponseDto)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(memberResponseDtos);
-
+                List<MemberResponseDto> memberResponseDtos = members.stream()
+                        .map(member -> createMemberResponseDto(member,filterOptionsRequestDto))
+                        .collect(Collectors.toList());
+                return ResponseEntity.ok(memberResponseDtos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }
+
+
+    @Transactional
+    private MemberResponseDto createMemberResponseDto(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
+        // 북마크 db 에서 해당 멤버가 존재하는지 확인, bookmark 값 정하기
+        boolean bookmark = bookmarkRepository.existsByTargetMemberId(member.getId());
+        // generationResponseDtoList 만들기 위해 함수 호출
+        List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member, filterOptionsRequestDto);
+        // MemberResponseDto 생성
+        return MemberResponseDto.builder()
+                .member(member)
+                .bookmark(bookmark)
+                .generationResponseDtoList(generationResponseDtoList)
+                .build();
+    }
+
+    @Transactional
+    private List<GenerationResponseDto> createGenerationResponseDtoList(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
+        // 해당 멤버 Generation
+        List<Generation> generationList = generationRepository.findByMember(member);
+        return generationList.stream()
+                .filter(generation ->
+                        (filterOptionsRequestDto.getDepartments().isEmpty() || filterOptionsRequestDto.getDepartments().contains(generation.getDepartment())) &&
+                                (filterOptionsRequestDto.getLevels().isEmpty() || filterOptionsRequestDto.getLevels().contains(generation.getLevel()))) // Filter based on department and level
+                .map(generation -> {
+                    // projectResponseDtoList 만들기 위해서 함수 호출
+                    List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member, generation, filterOptionsRequestDto);
+                    // GenerationResponseDto 생성
+                    return GenerationResponseDto.builder()
+                            .generation(generation)
+                            .projectResponseDtoList(projectResponseDtoList)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+    @Transactional
+    private List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation, FilterOptionsRequestDto filterOptionsRequestDto) {
+        List<Project> projects = projectRepository.findByMemberAndGeneration(member, generation);
+
+        Set<String> existingParts = new HashSet<>();
+
+        return projects.stream()
+                // 중복된 part가 있으면 그 project 는 제외
+                // 필터링 조건 있다면 조건 부합하지 않는 project 제외
+                .filter(project -> existingParts.add(project.getPart())&&
+                        (filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(project.getPart()))) // Filter based on parts
+                .map(ProjectResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+
 
     @Transactional
     public ResponseEntity<Object> bookmarkMember(Long memberIdToBookmark) {
@@ -63,42 +113,29 @@ public class NetworkService {
         }
 
     }
-
-    @Transactional
-    private MemberResponseDto createMemberResponseDto(Member member) {
-        // 북마크 db 에서 해당 멤버가 존재하는지 확인
-        boolean bookmark = bookmarkRepository.existsByTargetMemberId(member.getId());
-        List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member);
-        return MemberResponseDto.builder()
-                .member(member)
-                .bookmark(bookmark)
-                .generationResponseDtoList(generationResponseDtoList)
-                .build();
+    /*
+    private boolean isMemberMatch(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
+        // 필터링 하려고 들어온 부서, 파트, 레벨 값이 전부 비어있으면 (필터링 조건이 없으면)
+        // 모든 멤버를 포함해줘야 해서 항상 true 리턴
+        if (filterOptionsRequestDto.getDepartments().isEmpty() &&
+                filterOptionsRequestDto.getParts().isEmpty() &&
+                filterOptionsRequestDto.getLevels().isEmpty()){
+            return true;
+        }
+        // 필터링 조건에 부합하는 사람은 true return 하여 포함 시키기
+        // 필터링 조건에 부합하지 않는 사람은 false return 하여 제외 시키기
     }
+*/
 
-    @Transactional
-    private List<GenerationResponseDto> createGenerationResponseDtoList(Member member) {
-        List<Generation> generations = generationRepository.findByMember(member);
-        return generations.stream()
-                .map(generation -> {
-                    List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member, generation);
-                    return GenerationResponseDto.builder()
-                            .generation(generation)
-                            .projectResponseDtoList(projectResponseDtoList)
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-    @Transactional
-    private List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation) {
-        List<Project> projects = projectRepository.findByMemberAndGeneration(member, generation);
+/*    @Transactional
+    private List<MemberResponseDto> filteringMembers(String filterCondition){
+        List<Member> members = memberRepository.findAll();
+        // 조건에 의해 필터링 된 일부 멤버 리스트가 담긴 List<MemberResponseDto>
+        List<MemberResponseDto> memberResponseDtos;
 
-        Set<String> existingParts = new HashSet<>();
+        // 프론트에 조건에 의해 필터링 된 일부 멤버 리스트가 담긴 List<MemberResponseDto> 전달
+        return memberResponseDtos;
 
-        return projects.stream()
-                .filter(project -> existingParts.add(project.getPart())) // 중복된 part가 없는 경우만 필터링
-                .map(ProjectResponseDto::new)
-                .collect(Collectors.toList());
-    }
+    }*/
 
 }

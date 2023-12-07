@@ -1,5 +1,6 @@
 package com.gdscswu_server.server.domain.networking.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,13 +11,14 @@ import java.util.List;
 @Getter
 @Setter
 public class FilterOptionsRequestDto {
-    private String department;
-    private String part;
-    private String level;
+    private List<String> departments;
+    private List<String> parts;
+    private List<String> levels;
 
-    public FilterOptionsRequestDto(String departments, String parts, String levels) {
-        this.department = departments;
-        this.part = parts;
-        this.level = levels;
+    @Builder
+    public FilterOptionsRequestDto(List<String> departments, List<String> parts, List<String> levels) {
+        this.departments = departments;
+        this.parts = parts;
+        this.levels = levels;
     }
 }
