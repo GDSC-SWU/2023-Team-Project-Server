@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.logging.log4j.ThreadContext.isEmpty;
+
 @RequiredArgsConstructor
 @Service
 public class NetworkService {
@@ -29,16 +31,42 @@ public class NetworkService {
     @Transactional
     public ResponseEntity<Object> findAllMembers(FilterOptionsRequestDto filterOptionsRequestDto) {
         try {
-                List<Member> members = memberRepository.findAll();
+            List<Member> members = memberRepository.findAll();
 
-                List<MemberResponseDto> memberResponseDtos = members.stream()
-                        .map(member -> createMemberResponseDto(member,filterOptionsRequestDto))
-                        .collect(Collectors.toList());
-                return ResponseEntity.ok(memberResponseDtos);
+            List<MemberResponseDto> memberResponseDtoList = members.stream()
+
+                    .map(member -> {
+                        MemberResponseDto memberResponseDto = createMemberResponseDto(member, filterOptionsRequestDto);
+                        return memberResponseDto;
+                    })
+                    .collect(Collectors.toList());
+            memberResponseDtoList=memberResponseDtoList.stream().filter(filteredMembers -> isMemberMatch(filteredMembers, filterOptionsRequestDto)).collect(Collectors.toList());
+        return ResponseEntity.ok(memberResponseDtoList);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @Transactional
+    private boolean isMemberMatch(MemberResponseDto filteredMembers,FilterOptionsRequestDto filterOptionsRequestDto) {
+        // 필터링 조건이 없으면 항상 true 반환
+        if (filterOptionsRequestDto.getDepartments() == null && filterOptionsRequestDto.getLevels() == null && filterOptionsRequestDto.getParts() == null) {
+            return true;
+        } else {
+            boolean partMatch =
+                    filteredMembers.getGenerationResponseDtoList().stream()
+                            .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
+                            .anyMatch(projectResponseDto -> filterOptionsRequestDto.getParts().contains(projectResponseDto.getPart()));
 
+            boolean levelMatch =
+                    filteredMembers.getGenerationResponseDtoList().stream()
+                            .anyMatch(generationResponseDto -> filterOptionsRequestDto.getLevels().contains(generationResponseDto.getLevel()));
+
+            boolean departmentMatch =
+                    filteredMembers.getGenerationResponseDtoList().stream()
+                            .anyMatch(generationResponseDto -> filterOptionsRequestDto.getDepartments().contains(generationResponseDto.getDepartment()));
+
+            return partMatch || levelMatch || departmentMatch;
+        }
     }
 
 
@@ -48,12 +76,6 @@ public class NetworkService {
         boolean bookmark = bookmarkRepository.existsByTargetMemberId(member.getId());
         // generationResponseDtoList 만들기 위해 함수 호출
         List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member, filterOptionsRequestDto);
-        // 필터링
-        generationResponseDtoList=generationResponseDtoList.stream()
-                .filter(generationList -> (filterOptionsRequestDto.getDepartments().isEmpty() || filterOptionsRequestDto.getDepartments().contains(generationList.getDepartment())) ||
-                        (filterOptionsRequestDto.getLevels().isEmpty() || filterOptionsRequestDto.getLevels().contains(generationList.getLevel())))
-                .collect(Collectors.toList());
-
         // MemberResponseDto 생성
         return MemberResponseDto.builder()
                 .member(member)
@@ -73,11 +95,6 @@ public class NetworkService {
                 .map(generation -> {
                     // projectResponseDtoList 만들기 위해서 함수 호출
                     List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member, generation, filterOptionsRequestDto);
-                    // 필터링
-                    projectResponseDtoList=projectResponseDtoList.stream()
-                            .filter(projectList -> (filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(projectList.getPart())))
-                            .collect(Collectors.toList());
-
                     // GenerationResponseDto 생성
                     return GenerationResponseDto.builder()
                             .generation(generation)
@@ -95,8 +112,8 @@ public class NetworkService {
         return projects.stream()
                 // 중복된 part가 있으면 그 project 는 제외
                 // 필터링 조건 있다면 조건 부합하지 않는 project 제외
-                .filter(project -> existingParts.add(project.getPart()))
-                        /*(filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(project.getPart())))*/ // Filter based on parts
+                //.filter(project -> /*existingParts.add(project.getPart())&&*/
+                      //  (filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(project.getPart()))) // Filter based on parts
                 .map(ProjectResponseDto::new)
                 .collect(Collectors.toList());
     }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collections;
 import java.util.List;
 
 @NoArgsConstructor
@@ -20,5 +21,17 @@ public class FilterOptionsRequestDto {
         this.departments = departments;
         this.parts = parts;
         this.levels = levels;
+    }
+
+    public List<String> getParts() {
+        return parts != null ? parts : Collections.emptyList();
+    }
+
+    public List<String> getDepartments() {
+        return departments != null ? departments : Collections.emptyList();
+    }
+
+    public List<String> getLevels() {
+        return levels != null ? levels : Collections.emptyList();
     }
 }
