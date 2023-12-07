@@ -48,6 +48,12 @@ public class NetworkService {
         boolean bookmark = bookmarkRepository.existsByTargetMemberId(member.getId());
         // generationResponseDtoList 만들기 위해 함수 호출
         List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member, filterOptionsRequestDto);
+        // 필터링
+        generationResponseDtoList=generationResponseDtoList.stream()
+                .filter(generationList -> (filterOptionsRequestDto.getDepartments().isEmpty() || filterOptionsRequestDto.getDepartments().contains(generationList.getDepartment())) ||
+                        (filterOptionsRequestDto.getLevels().isEmpty() || filterOptionsRequestDto.getLevels().contains(generationList.getLevel())))
+                .collect(Collectors.toList());
+
         // MemberResponseDto 생성
         return MemberResponseDto.builder()
                 .member(member)
@@ -61,12 +67,17 @@ public class NetworkService {
         // 해당 멤버 Generation
         List<Generation> generationList = generationRepository.findByMember(member);
         return generationList.stream()
-                .filter(generation ->
-                        (filterOptionsRequestDto.getDepartments().isEmpty() || filterOptionsRequestDto.getDepartments().contains(generation.getDepartment())) &&
-                                (filterOptionsRequestDto.getLevels().isEmpty() || filterOptionsRequestDto.getLevels().contains(generation.getLevel()))) // Filter based on department and level
+                /*.filter(generation ->
+                        (filterOptionsRequestDto.getDepartments().isEmpty() || filterOptionsRequestDto.getDepartments().contains(generation.getDepartment())) ||
+                                (filterOptionsRequestDto.getLevels().isEmpty() || filterOptionsRequestDto.getLevels().contains(generation.getLevel()))) */// Filter based on department and level
                 .map(generation -> {
                     // projectResponseDtoList 만들기 위해서 함수 호출
                     List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member, generation, filterOptionsRequestDto);
+                    // 필터링
+                    projectResponseDtoList=projectResponseDtoList.stream()
+                            .filter(projectList -> (filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(projectList.getPart())))
+                            .collect(Collectors.toList());
+
                     // GenerationResponseDto 생성
                     return GenerationResponseDto.builder()
                             .generation(generation)
@@ -84,8 +95,8 @@ public class NetworkService {
         return projects.stream()
                 // 중복된 part가 있으면 그 project 는 제외
                 // 필터링 조건 있다면 조건 부합하지 않는 project 제외
-                .filter(project -> existingParts.add(project.getPart())&&
-                        (filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(project.getPart()))) // Filter based on parts
+                .filter(project -> existingParts.add(project.getPart()))
+                        /*(filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(project.getPart())))*/ // Filter based on parts
                 .map(ProjectResponseDto::new)
                 .collect(Collectors.toList());
     }
