@@ -10,6 +10,7 @@ import com.gdscswu_server.server.domain.networking.dto.ProjectResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -26,42 +27,53 @@ public class NetworkService {
     public final BookmarkRepository bookmarkRepository;
 
     @Transactional
-    public List<MemberResponseDto> findAllMembers() {
-        List<Member> members = memberRepository.findAll();
-        return members.stream()
-                .map(this::createMemberResponseDto)
-                .collect(Collectors.toList());
-    }
+    public ResponseEntity<Object> findAllMembers() {
+        try {
+            List<Member> members = memberRepository.findAll();
 
-    @Transactional
-    public List<MemberResponseDto> bookmarkMember(Long memberIdToBookmark) {
-        Member memberToBookmark = memberRepository.findById(memberIdToBookmark)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberIdToBookmark));
+            List<MemberResponseDto> memberResponseDtos = members.stream()
+                    .map(this::createMemberResponseDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(memberResponseDtos);
 
-        // Check if the bookmark already exists
-        boolean hasBookmark = hasBookmark(memberIdToBookmark);
-        if (hasBookmark) {
-            bookmarkRepository.deleteByMemberId(memberIdToBookmark);
-        } else {
-            bookmarkRepository.save(new Bookmark(memberToBookmark, memberToBookmark));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
-        return findAllMembers();
     }
+
+    @Transactional
+    public ResponseEntity<Object> bookmarkMember(Long memberIdToBookmark) {
+        try {
+            // 해당 id의 멤버를 Member db 에서 찾아오기
+            Member memberToBookmark = memberRepository.findById(memberIdToBookmark)
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberIdToBookmark));
+            // 해당 멤버가 북마크가 되어있는지 검사해오기 (북마크 되어있음 -> true)
+            boolean hasBookmark = bookmarkRepository.existsByTargetMemberId(memberIdToBookmark);
+            // 북마크가 되어있다면 삭제
+            if (hasBookmark) {
+                bookmarkRepository.deleteByTargetMemberId(memberIdToBookmark);
+            } else {
+                bookmarkRepository.save(new Bookmark(memberToBookmark, memberToBookmark));
+            }
+            return ResponseEntity.ok(bookmarkRepository.existsByTargetMemberId(memberIdToBookmark));
+
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
     @Transactional
     private MemberResponseDto createMemberResponseDto(Member member) {
-        boolean bookmark = hasBookmark(member.getId());
+        // 북마크 db 에서 해당 멤버가 존재하는지 확인
+        boolean bookmark = bookmarkRepository.existsByTargetMemberId(member.getId());
         List<GenerationResponseDto> generationResponseDtoList = createGenerationResponseDtoList(member);
         return MemberResponseDto.builder()
                 .member(member)
                 .bookmark(bookmark)
                 .generationResponseDtoList(generationResponseDtoList)
                 .build();
-    }
-
-    @Transactional
-    private boolean hasBookmark(Long memberId) {
-        return bookmarkRepository.existsByMemberId(memberId);
     }
 
     @Transactional

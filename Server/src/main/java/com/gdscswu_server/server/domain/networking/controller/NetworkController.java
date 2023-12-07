@@ -17,13 +17,13 @@ public class NetworkController {
 
     // 멤버 리스트 응답
     @GetMapping("")
-    public List<MemberResponseDto> getAllMembers() {
+    public ResponseEntity<Object> getAllMembers() {
         return networkService.findAllMembers();
     }
 
-    // 북마크 설정
+    // 북마크 설정/해제
     @PostMapping("/bookmark/{memberId}")
-    public List<MemberResponseDto> setBookmark(@PathVariable Long memberId){
+    public ResponseEntity<Object> setBookmark(@PathVariable Long memberId){
         return networkService.bookmarkMember(memberId);
     }
 

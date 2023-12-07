@@ -10,13 +10,13 @@ import java.util.List;
 @Getter
 @Setter
 public class FilterOptionsRequestDto {
-    private List<String> departments;
-    private List<String> parts;
-    private List<String> levels;
+    private String department;
+    private String part;
+    private String level;
 
-    public FilterOptionsRequestDto(List<String> departments, List<String> parts, List<String> levels) {
-        this.departments = departments;
-        this.parts = parts;
-        this.levels = levels;
+    public FilterOptionsRequestDto(String departments, String parts, String levels) {
+        this.department = departments;
+        this.part = parts;
+        this.level = levels;
     }
 }

@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
-    boolean existsByMemberId(Long memberId);
+    boolean existsByTargetMemberId(Long memberId);
 
-    void deleteByMemberId(Long memberId);
+
+    void deleteByTargetMemberId(Long memberId);
 }
