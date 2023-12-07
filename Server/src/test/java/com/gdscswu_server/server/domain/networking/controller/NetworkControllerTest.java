@@ -125,7 +125,7 @@ class NetworkControllerTest {
                 .build());
 
 
-        ProjectResponseDto partListResponseDto1 = ProjectResponseDto.builder()
+      /*  ProjectResponseDto partListResponseDto1 = ProjectResponseDto.builder()
                 .projects(project1)
                 .build();
         ProjectResponseDto partListResponseDto2 = ProjectResponseDto.builder()
@@ -166,12 +166,15 @@ class NetworkControllerTest {
                 .member(member2)
                 .bookmark(true)
                 .generationResponseDtoList(List.of(generationResponseDto3))
-                .build();
+                .build();*/
 
 
         // When
+        // 김슈니 박슈니 전부 저장
         generationRepository.saveAll(List.of(generation1, generation2, generation3));
         projectRepository.saveAll(List.of(project1, project2, project3, project4, project5));
+        memberRepository.saveAll(List.of(member1,member2));
+        bookmarkRepository.save(new Bookmark(member1, member1));
 
         // then
         String url = "http://localhost:" + port + "/api/v1/network";
