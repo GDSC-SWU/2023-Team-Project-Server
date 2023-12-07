@@ -48,25 +48,51 @@ public class NetworkService {
     }
     @Transactional
     private boolean isMemberMatch(MemberResponseDto filteredMembers,FilterOptionsRequestDto filterOptionsRequestDto) {
-        // 필터링 조건이 없으면 항상 true 반환
-        if (filterOptionsRequestDto.getDepartments() == null && filterOptionsRequestDto.getLevels() == null && filterOptionsRequestDto.getParts() == null) {
-            return true;
-        } else {
-            boolean partMatch =
-                    filteredMembers.getGenerationResponseDtoList().stream()
-                            .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
-                            .anyMatch(projectResponseDto -> filterOptionsRequestDto.getParts().contains(projectResponseDto.getPart()));
 
-            boolean levelMatch =
-                    filteredMembers.getGenerationResponseDtoList().stream()
-                            .anyMatch(generationResponseDto -> filterOptionsRequestDto.getLevels().contains(generationResponseDto.getLevel()));
+            boolean partMatch;
+            boolean levelMatch;
+            boolean departmentMatch;
 
-            boolean departmentMatch =
-                    filteredMembers.getGenerationResponseDtoList().stream()
-                            .anyMatch(generationResponseDto -> filterOptionsRequestDto.getDepartments().contains(generationResponseDto.getDepartment()));
+            if(filterOptionsRequestDto.getParts().isEmpty()){
+                partMatch= true;
+            }else {
+                partMatch =
+                        filteredMembers.getGenerationResponseDtoList().stream()
+                                .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
+                                .map(ProjectResponseDto::getPart)
+                                .collect(Collectors.toList())
+                                .containsAll(filterOptionsRequestDto.getParts());
+            }
 
-            return partMatch || levelMatch || departmentMatch;
-        }
+
+
+            if(filterOptionsRequestDto.getLevels().isEmpty()){
+                levelMatch=true;
+            }else{
+                levelMatch =
+                        filteredMembers.getGenerationResponseDtoList().stream()
+                                .map(GenerationResponseDto::getLevel)
+                                .collect(Collectors.toList())
+                                .containsAll(filterOptionsRequestDto.getLevels());
+            }
+
+
+
+            if(filterOptionsRequestDto.getDepartments().isEmpty()){
+                departmentMatch=true;
+            }else{
+                departmentMatch =
+                        filteredMembers.getGenerationResponseDtoList().stream()
+                                .map(GenerationResponseDto::getDepartment)
+                                .collect(Collectors.toList())
+                                .containsAll(filterOptionsRequestDto.getDepartments());
+            }
+
+            //int count = filterOptionsRequestDto.getS
+
+
+            return partMatch && levelMatch && departmentMatch;
+
     }
 
 
