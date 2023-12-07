@@ -48,50 +48,69 @@ public class NetworkService {
     }
     @Transactional
     private boolean isMemberMatch(MemberResponseDto filteredMembers,FilterOptionsRequestDto filterOptionsRequestDto) {
+        // 셋다 true 여야 return 해주는 로직
+        boolean partMatch;
+        boolean levelMatch;
+        boolean departmentMatch;
 
-            boolean partMatch;
-            boolean levelMatch;
-            boolean departmentMatch;
-
-            if(filterOptionsRequestDto.getParts().isEmpty()){
-                partMatch= true;
-            }else {
-                partMatch =
-                        filteredMembers.getGenerationResponseDtoList().stream()
-                                .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
-                                .map(ProjectResponseDto::getPart)
-                                .collect(Collectors.toList())
-                                .containsAll(filterOptionsRequestDto.getParts());
-            }
-
-
-
-            if(filterOptionsRequestDto.getLevels().isEmpty()){
-                levelMatch=true;
-            }else{
-                levelMatch =
-                        filteredMembers.getGenerationResponseDtoList().stream()
-                                .map(GenerationResponseDto::getLevel)
-                                .collect(Collectors.toList())
-                                .containsAll(filterOptionsRequestDto.getLevels());
-            }
+        // containsAll 메서드는 파라미터로 전달된 컬렉션이 비어있으면 무조건 true 를 반환
+        // 조건이 없으면 다 true 처리 함 (어차피 다른 조건 안맞으면 못 나감)
+        partMatch =
+                filteredMembers.getGenerationResponseDtoList().stream()
+                        .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
+                        .map(ProjectResponseDto::getPart)
+                        .collect(Collectors.toList())
+                        // filteredMembers 의 part 조건이 filterOptionsRequestDto 의 모든 조건을 포함하고 있는지 확인
+                        // 필터링을 하고자 하는 조건을 멤버가 전부 가져야 함
+                        .containsAll(filterOptionsRequestDto.getParts());
+        levelMatch =
+                filteredMembers.getGenerationResponseDtoList().stream()
+                        .map(GenerationResponseDto::getLevel)
+                        .collect(Collectors.toList())
+                        .containsAll(filterOptionsRequestDto.getLevels());
+        departmentMatch =
+                filteredMembers.getGenerationResponseDtoList().stream()
+                        .map(GenerationResponseDto::getDepartment)
+                        .collect(Collectors.toList())
+                        .containsAll(filterOptionsRequestDto.getDepartments());
 
 
+        /*if(filterOptionsRequestDto.getParts().isEmpty()){
+            // 파트 필터링 조건 없으면 true
+            partMatch= true;
+        }else {
+            partMatch =
+                    filteredMembers.getGenerationResponseDtoList().stream()
+                            .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
+                            .map(ProjectResponseDto::getPart)
+                            .collect(Collectors.toList())
+                            .containsAll(filterOptionsRequestDto.getParts());
+        }
+        if(filterOptionsRequestDto.getLevels().isEmpty()){
+            // 레벨 필터링 조건 없으면 true
+            levelMatch=true;
+        }else{
+            levelMatch =
+                    filteredMembers.getGenerationResponseDtoList().stream()
+                            .map(GenerationResponseDto::getLevel)
+                            .collect(Collectors.toList())
+                            .containsAll(filterOptionsRequestDto.getLevels());
+        }
+        if(filterOptionsRequestDto.getDepartments().isEmpty()){
+            // 부서 조건 없으면 true 리턴
+            departmentMatch=true;
+        }else{
+            departmentMatch =
+                    filteredMembers.getGenerationResponseDtoList().stream()
+                            .map(GenerationResponseDto::getDepartment)
+                            .collect(Collectors.toList())
+                            .containsAll(filterOptionsRequestDto.getDepartments());
+        }
+*/
+        //int count = filterOptionsRequestDto.getS
 
-            if(filterOptionsRequestDto.getDepartments().isEmpty()){
-                departmentMatch=true;
-            }else{
-                departmentMatch =
-                        filteredMembers.getGenerationResponseDtoList().stream()
-                                .map(GenerationResponseDto::getDepartment)
-                                .collect(Collectors.toList())
-                                .containsAll(filterOptionsRequestDto.getDepartments());
-            }
 
-            //int count = filterOptionsRequestDto.getS
-
-
-            return partMatch && levelMatch && departmentMatch;
+        return partMatch && levelMatch && departmentMatch;
 
     }
 
@@ -115,9 +134,6 @@ public class NetworkService {
         // 해당 멤버 Generation
         List<Generation> generationList = generationRepository.findByMember(member);
         return generationList.stream()
-                /*.filter(generation ->
-                        (filterOptionsRequestDto.getDepartments().isEmpty() || filterOptionsRequestDto.getDepartments().contains(generation.getDepartment())) ||
-                                (filterOptionsRequestDto.getLevels().isEmpty() || filterOptionsRequestDto.getLevels().contains(generation.getLevel()))) */// Filter based on department and level
                 .map(generation -> {
                     // projectResponseDtoList 만들기 위해서 함수 호출
                     List<ProjectResponseDto> projectResponseDtoList = createProjectResponseDtoList(member, generation, filterOptionsRequestDto);
@@ -136,10 +152,6 @@ public class NetworkService {
         Set<String> existingParts = new HashSet<>();
 
         return projects.stream()
-                // 중복된 part가 있으면 그 project 는 제외
-                // 필터링 조건 있다면 조건 부합하지 않는 project 제외
-                //.filter(project -> /*existingParts.add(project.getPart())&&*/
-                      //  (filterOptionsRequestDto.getParts().isEmpty() || filterOptionsRequestDto.getParts().contains(project.getPart()))) // Filter based on parts
                 .map(ProjectResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -167,29 +179,5 @@ public class NetworkService {
         }
 
     }
-    /*
-    private boolean isMemberMatch(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
-        // 필터링 하려고 들어온 부서, 파트, 레벨 값이 전부 비어있으면 (필터링 조건이 없으면)
-        // 모든 멤버를 포함해줘야 해서 항상 true 리턴
-        if (filterOptionsRequestDto.getDepartments().isEmpty() &&
-                filterOptionsRequestDto.getParts().isEmpty() &&
-                filterOptionsRequestDto.getLevels().isEmpty()){
-            return true;
-        }
-        // 필터링 조건에 부합하는 사람은 true return 하여 포함 시키기
-        // 필터링 조건에 부합하지 않는 사람은 false return 하여 제외 시키기
-    }
-*/
-
-/*    @Transactional
-    private List<MemberResponseDto> filteringMembers(String filterCondition){
-        List<Member> members = memberRepository.findAll();
-        // 조건에 의해 필터링 된 일부 멤버 리스트가 담긴 List<MemberResponseDto>
-        List<MemberResponseDto> memberResponseDtos;
-
-        // 프론트에 조건에 의해 필터링 된 일부 멤버 리스트가 담긴 List<MemberResponseDto> 전달
-        return memberResponseDtos;
-
-    }*/
 
 }

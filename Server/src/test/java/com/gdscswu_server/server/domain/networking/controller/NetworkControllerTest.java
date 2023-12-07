@@ -232,14 +232,14 @@ class NetworkControllerTest {
                 .build());
 
         // 예시로 몇 가지 값을 할당
-        final List<String> departments = Arrays.asList("Server");
+        //final List<String> departments = Arrays.asList("Server","Android");
         //final List<String> parts = Arrays.asList("Back");
-        //final List<String> levels = Arrays.asList("Core");
+        final List<String> levels = Arrays.asList("Member");
 
         // 예시로 몇 가지 값을 할당
-        //final List<String> departments = null;
+        final List<String> departments = null;
         final List<String> parts = null;
-        final List<String> levels = null;
+        //final List<String> levels = null;
 
         FilterOptionsRequestDto filterOptionsRequestDto= FilterOptionsRequestDto.builder()
                 .parts(parts)
