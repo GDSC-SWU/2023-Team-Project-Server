@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 , new AntPathRequestMatcher("/profile")
                         ).permitAll()
                         .requestMatchers("/api/v1/user/login/**").permitAll()
+                        .requestMatchers("/api/v1/member/test").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class)

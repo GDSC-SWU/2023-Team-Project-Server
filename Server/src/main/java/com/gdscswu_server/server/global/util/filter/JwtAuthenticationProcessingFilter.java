@@ -39,11 +39,12 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ApiException, ServletException, IOException, ExpiredJwtException {
         final String LOGIN_API_URL = "/api/v1/member/login/oauth/google";
+        final String TEST_API_URL = "/api/v1/member/test";
         final String TOKEN_REFRESH_API_URL = "/api/v1/member/token";
 
         // uri 검사하여 jwt 검증 필터 통과 여부 결정
         String uri = request.getRequestURI();
-        if (uri.equals(LOGIN_API_URL)) {
+        if (uri.equals(LOGIN_API_URL) || uri.equals(TEST_API_URL)) {
             filterChain.doFilter(request, response);
             return;
         }
