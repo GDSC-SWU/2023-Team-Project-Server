@@ -46,7 +46,7 @@ public class NetworkService {
     }
 
     @Transactional
-    private boolean isMemberMatch(MemberResponseDto filteredMembers, FilterOptionsRequestDto filterOptionsRequestDto) {
+    public boolean isMemberMatch(MemberResponseDto filteredMembers, FilterOptionsRequestDto filterOptionsRequestDto) {
         // 셋다 true 여야 return 해주는 로직
         boolean partMatch;
         boolean levelMatch;
@@ -115,7 +115,7 @@ public class NetworkService {
 
 
     @Transactional
-    private MemberResponseDto createMemberResponseDto(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
+    public MemberResponseDto createMemberResponseDto(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
         // 북마크 db 에서 해당 멤버가 존재하는지 확인, bookmark 값 정하기
         boolean bookmark = bookmarkRepository.existsByTargetMemberId(member.getId());
         // generationResponseDtoList 만들기 위해 함수 호출
@@ -129,7 +129,7 @@ public class NetworkService {
     }
 
     @Transactional
-    private List<GenerationResponseDto> createGenerationResponseDtoList(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
+    public List<GenerationResponseDto> createGenerationResponseDtoList(Member member, FilterOptionsRequestDto filterOptionsRequestDto) {
         // 해당 멤버 Generation
         List<Generation> generationList = generationRepository.findByMember(member);
         return generationList.stream()
@@ -146,7 +146,7 @@ public class NetworkService {
     }
 
     @Transactional
-    private List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation, FilterOptionsRequestDto filterOptionsRequestDto) {
+    public List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation, FilterOptionsRequestDto filterOptionsRequestDto) {
         List<Project> projects = projectRepository.findByMemberAndGeneration(member, generation);
 
         Set<String> existingParts = new HashSet<>();
