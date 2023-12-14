@@ -14,6 +14,7 @@ public enum GlobalErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "User not found."),
     LOGIN_REQUIRED(HttpStatus.FORBIDDEN, "Login required."),
     EXPIRED_JWT(HttpStatus.FORBIDDEN, "Token expired."),
+    GCS_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "[Google Cloud Storage] File not found."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Request method is not supported."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
 

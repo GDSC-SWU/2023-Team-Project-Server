@@ -42,3 +42,7 @@ out/
 
 ### Secret ###
 application.properties
+gcp-storage-key.json
+
+### Test file ###
+test.png
