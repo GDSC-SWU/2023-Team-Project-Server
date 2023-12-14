@@ -31,6 +31,14 @@ public class Generation {
     @NotNull
     private String level;
 
+    @Builder
+    public Generation(Member member, Integer number, String department, String level) {
+        this.member = member;
+        this.number = number;
+        this.department = department;
+        this.level = level;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

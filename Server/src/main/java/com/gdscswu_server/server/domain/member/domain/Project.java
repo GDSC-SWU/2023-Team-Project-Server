@@ -30,6 +30,9 @@ public class Project {
     @NotNull
     private String title;
 
+    @NotNull
+    private Integer generation;
+
     private String type;
     private String part;
 
@@ -39,6 +42,13 @@ public class Project {
         this.member=member;
         this.title = title;
         this.part = part;
+    }
+  
+    @Builder
+    public Project(Member member, String title, Integer generation) {
+        this.member = member;
+        this.title = title;
+        this.generation = generation;
     }
 
     @Override

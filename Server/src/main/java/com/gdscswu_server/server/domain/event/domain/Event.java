@@ -1,7 +1,9 @@
 package com.gdscswu_server.server.domain.event.domain;
 
+import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -34,5 +36,11 @@ public class Event {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, date);
+    }
+
+    @Builder
+    public Event(String title, LocalDate date) {
+        this.title = title;
+        this.date = date;
     }
 }

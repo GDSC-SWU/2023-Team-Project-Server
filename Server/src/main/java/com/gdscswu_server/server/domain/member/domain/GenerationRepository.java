@@ -7,6 +7,7 @@ import java.util.List;
 
 @Repository
 public interface GenerationRepository extends JpaRepository<Generation, Long> {
-    List<Generation> findByMember(Member member);
 
+    List<Generation> findByMember(Member member);
+    List<Generation> findAllByMemberOrderByNumberDesc(Member member);   // 기수 내림차순 적용
 }
