@@ -1,26 +1,27 @@
 package com.gdscswu_server.server;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
-import java.util.List;
-
-import com.gdscswu_server.server.domain.event.controller.DateController;
+import com.gdscswu_server.server.domain.event.controller.EventController;
 import com.gdscswu_server.server.domain.event.service.EventService;
 import com.gdscswu_server.server.global.common.DataResponseDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest
 public class DateControllerTest {
     @Mock
     private EventService eventService;
-
     @InjectMocks
-    private DateController dateController;
+    private EventController eventController;
 
     @Test
     void getEventsByDate() {
@@ -32,7 +33,7 @@ public class DateControllerTest {
         when(eventService.getEventsByDate(date)).thenReturn(mockEventNames);
 
         // 테스트 수행
-        ResponseEntity<DataResponseDto<List<String>>> response = dateController.getEventsByDate(date);
+        ResponseEntity<DataResponseDto<List<String>>> response = eventController.getEventsByDate(date);
 
         // 결과 검증
         assertEquals(HttpStatus.OK, response.getStatusCode());
