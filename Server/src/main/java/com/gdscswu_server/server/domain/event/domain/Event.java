@@ -1,10 +1,10 @@
 package com.gdscswu_server.server.domain.event.domain;
 
-import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -12,6 +12,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "Event")
 @Getter
+@NoArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
