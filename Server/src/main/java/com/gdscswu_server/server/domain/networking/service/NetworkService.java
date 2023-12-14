@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
-
 @RequiredArgsConstructor
 @Service
 public class NetworkService {
@@ -40,14 +38,15 @@ public class NetworkService {
                         return memberResponseDto;
                     })
                     .collect(Collectors.toList());
-            memberResponseDtoList=memberResponseDtoList.stream().filter(filteredMembers -> isMemberMatch(filteredMembers, filterOptionsRequestDto)).collect(Collectors.toList());
-        return ResponseEntity.ok(memberResponseDtoList);
+            memberResponseDtoList = memberResponseDtoList.stream().filter(filteredMembers -> isMemberMatch(filteredMembers, filterOptionsRequestDto)).collect(Collectors.toList());
+            return ResponseEntity.ok(memberResponseDtoList);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @Transactional
-    private boolean isMemberMatch(MemberResponseDto filteredMembers,FilterOptionsRequestDto filterOptionsRequestDto) {
+    private boolean isMemberMatch(MemberResponseDto filteredMembers, FilterOptionsRequestDto filterOptionsRequestDto) {
         // 셋다 true 여야 return 해주는 로직
         boolean partMatch;
         boolean levelMatch;
@@ -56,20 +55,20 @@ public class NetworkService {
         // containsAll 메서드는 파라미터로 전달된 컬렉션이 비어있으면 무조건 true 를 반환
         // 조건이 없으면 다 true 처리 함 (어차피 다른 조건 안맞으면 못 나감)
         partMatch =
-                filteredMembers.getGenerationResponseDtoList().stream()
-                        .flatMap(generationResponseDto -> generationResponseDto.getProjectResponseDtoList().stream())
+                filteredMembers.getGenerationList().stream()
+                        .flatMap(generationResponseDto -> generationResponseDto.getProjectList().stream())
                         .map(ProjectResponseDto::getPart)
                         .collect(Collectors.toList())
                         // filteredMembers 의 part 조건이 filterOptionsRequestDto 의 모든 조건을 포함하고 있는지 확인
                         // 필터링을 하고자 하는 조건을 멤버가 전부 가져야 함
                         .containsAll(filterOptionsRequestDto.getParts());
         levelMatch =
-                filteredMembers.getGenerationResponseDtoList().stream()
+                filteredMembers.getGenerationList().stream()
                         .map(GenerationResponseDto::getLevel)
                         .collect(Collectors.toList())
                         .containsAll(filterOptionsRequestDto.getLevels());
         departmentMatch =
-                filteredMembers.getGenerationResponseDtoList().stream()
+                filteredMembers.getGenerationList().stream()
                         .map(GenerationResponseDto::getDepartment)
                         .collect(Collectors.toList())
                         .containsAll(filterOptionsRequestDto.getDepartments());
@@ -125,7 +124,7 @@ public class NetworkService {
         return MemberResponseDto.builder()
                 .member(member)
                 .bookmark(bookmark)
-                .generationResponseDtoList(generationResponseDtoList)
+                .generationList(generationResponseDtoList)
                 .build();
     }
 
@@ -140,11 +139,12 @@ public class NetworkService {
                     // GenerationResponseDto 생성
                     return GenerationResponseDto.builder()
                             .generation(generation)
-                            .projectResponseDtoList(projectResponseDtoList)
+                            .projectList(projectResponseDtoList)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
+
     @Transactional
     private List<ProjectResponseDto> createProjectResponseDtoList(Member member, Generation generation, FilterOptionsRequestDto filterOptionsRequestDto) {
         List<Project> projects = projectRepository.findByMemberAndGeneration(member, generation);
@@ -155,7 +155,6 @@ public class NetworkService {
                 .map(ProjectResponseDto::new)
                 .collect(Collectors.toList());
     }
-
 
 
     @Transactional
@@ -174,7 +173,7 @@ public class NetworkService {
             }
             return ResponseEntity.ok(bookmarkRepository.existsByTargetMemberId(memberIdToBookmark));
 
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
