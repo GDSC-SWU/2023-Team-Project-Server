@@ -71,7 +71,7 @@ public class MemberControllerTest {
         Project project = Project.builder()
                 .member(member)
                 .title("project")
-                .generation(1)
+                .generation(generation)
                 .build();
         projectRepository.save(project);
 
@@ -79,7 +79,7 @@ public class MemberControllerTest {
         Project project1 = Project.builder()
                 .member(member)
                 .title("project2")
-                .generation(2)
+                .generation(generation2)
                 .build();
         projectRepository.save(project1);
 
