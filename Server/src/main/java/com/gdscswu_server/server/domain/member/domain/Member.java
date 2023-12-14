@@ -1,11 +1,13 @@
 package com.gdscswu_server.server.domain.member.domain;
 
+import com.gdscswu_server.server.domain.member.dto.ProfileSaveRequestDto;
 import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Objects;
 
@@ -13,6 +15,7 @@ import java.util.Objects;
 @Table(name = "Member")
 @Getter
 @NoArgsConstructor
+@DynamicUpdate
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,13 +36,12 @@ public class Member {
     private Role role;
 
     @Builder
-    public Member(String name, String profileImagePath, String major, Integer admissionYear, String introduction, String email){
-        this.name=name;
-        this.profileImagePath=profileImagePath;
-        this.major=major;
-        this.admissionYear=admissionYear;
-        this.introduction=introduction;
-        this.email=email;
+    public Member(String name, String major, Integer admissionYear, String introduction, String email) {
+        this.name = name;
+        this.major = major;
+        this.admissionYear = admissionYear;
+        this.introduction = introduction;
+        this.email = email;
 
     }
 
@@ -66,10 +68,17 @@ public class Member {
         return Objects.hash(id, name, email);
     }
 
-    public Member update(String name, String profileImagePath) {
-        this.name = name;
-        this.profileImagePath = profileImagePath;
+    public Member update(ProfileSaveRequestDto dto) {
+        this.name = dto.getName();
+        this.major = dto.getMajor();
+        this.admissionYear = dto.getAdmissionYear();
+        this.introduction = dto.getIntroduction();
+        this.email = dto.getEmail();
 
         return this;
+    }
+
+    public void updateProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
     }
 }
