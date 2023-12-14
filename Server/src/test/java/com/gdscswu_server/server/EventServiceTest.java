@@ -1,20 +1,20 @@
 package com.gdscswu_server.server;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-
+import com.gdscswu_server.server.domain.event.domain.Event;
 import com.gdscswu_server.server.domain.event.domain.EventRepository;
 import com.gdscswu_server.server.domain.event.service.EventService;
-import com.gdscswu_server.server.domain.event.domain.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
@@ -30,11 +30,8 @@ public class EventServiceTest {
         String date = "2023-01-01";
         LocalDate queryDate = LocalDate.parse(date);
 
-        Event event1 = new Event();
-        event1.setTitle("Event 1");
-
-        Event event2 = new Event();
-        event2.setTitle("Event 2");
+        Event event1 = new Event("Event 1", queryDate);
+        Event event2 = new Event("Event 2", queryDate);
 
         List<Event> mockEvents = Arrays.asList(event1, event2);
 

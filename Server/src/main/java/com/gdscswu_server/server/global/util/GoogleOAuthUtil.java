@@ -42,10 +42,6 @@ public class GoogleOAuthUtil {
         String email = payload.getEmail();
         String pictureUrl = (String) payload.get("picture");
 
-        return Member.googleBuilder()
-                .googleEmail(email)
-                .name(userId)
-                .profileImagePath(pictureUrl)
-                .build();
+        return new Member(email, userId, pictureUrl);
     }
 }

@@ -10,7 +10,7 @@ public class ProjectResponseDto {
     private String part;
 
     public ProjectResponseDto(Project project) {
-        this.generation = project.getGeneration();
+        this.generation = project.getGeneration().getNumber();
         this.title = project.getTitle();
         this.part = project.getPart();
     }
