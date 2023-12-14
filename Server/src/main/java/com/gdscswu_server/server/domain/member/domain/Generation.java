@@ -1,14 +1,18 @@
 package com.gdscswu_server.server.domain.member.domain;
 
+import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "Generation")
 @Getter
+@NoArgsConstructor
 public class Generation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +31,14 @@ public class Generation {
     @NotNull
     private String level;
 
+    @Builder
+    public Generation(Member member, Integer number, String department, String level) {
+        this.member = member;
+        this.number = number;
+        this.department = department;
+        this.level = level;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -35,6 +47,14 @@ public class Generation {
         return Objects.equals(this.id, generation.getId()) &&
                 Objects.equals(this.member, generation.getMember()) &&
                 Objects.equals(this.number, generation.getNumber());
+    }
+
+    @Builder
+    public Generation(Member member, Integer number, String department,String level) {
+        this.member = member;
+        this.number = number;
+        this.department = department;
+        this.level = level;
     }
 
     @Override

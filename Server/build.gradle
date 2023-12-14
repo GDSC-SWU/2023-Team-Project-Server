@@ -15,14 +15,25 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    enabled = false
+}
+
+bootJar {
+    exclude("src/main/resources/applicaiton.properties")
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation "com.google.api-client:google-api-client:2.2.0"
+    implementation 'org.springframework.cloud:spring-cloud-gcp-starter:1.2.8.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-gcp-storage:1.2.8.RELEASE'
+    implementation 'com.google.api-client:google-api-client:1.35.1'
     implementation 'com.google.http-client:google-http-client-gson:1.43.1'
+    implementation 'com.google.protobuf:protobuf-java:3.25.1'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     compileOnly 'org.projectlombok:lombok'
@@ -31,6 +42,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'junit:junit:4.13.1'
 }
 
 tasks.named('bootBuildImage') {
@@ -39,4 +51,10 @@ tasks.named('bootBuildImage') {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks {
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 }

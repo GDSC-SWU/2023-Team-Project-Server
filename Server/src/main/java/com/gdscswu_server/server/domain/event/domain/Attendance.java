@@ -3,6 +3,7 @@ package com.gdscswu_server.server.domain.event.domain;
 import com.gdscswu_server.server.domain.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -37,4 +38,11 @@ public class Attendance {
     public int hashCode() {
         return Objects.hash(id, member, event);
     }
+
+    @Builder
+    public Attendance(Member member,Event event){
+        this.member=member;
+        this.event=event;
+    }
+
 }

@@ -1,8 +1,10 @@
 package com.gdscswu_server.server.domain.networking.domain;
 
+import com.gdscswu_server.server.domain.member.domain.Generation;
 import com.gdscswu_server.server.domain.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -27,6 +29,12 @@ public class Bookmark {
 
     @CreatedDate
     private LocalDateTime publishedAt;
+
+    @Builder
+    public Bookmark(Member member,Member targetMember) {
+        this.member = member;
+        this.targetMember=targetMember;
+    }
 
     @Override
     public boolean equals(Object obj) {
