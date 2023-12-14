@@ -24,7 +24,7 @@ public class MemberController {
 
     @PostMapping // 프로필 저장
     public Long profileSave(@AuthenticationPrincipal ContextUser contextUser,
-                            @RequestPart MultipartFile profileImage,
+                            @RequestPart(required = false) MultipartFile profileImage,
                             @RequestPart("data") ProfileSaveRequestDto requestDto) throws IOException {
         return memberService.profileSave(contextUser.getMember(), profileImage, requestDto);
     }
