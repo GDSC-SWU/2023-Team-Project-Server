@@ -1,26 +1,39 @@
-package com.gdscswu_server.server.domain.member.controller;
+package com.gdscswu_server.server.domain.Member.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdscswu_server.server.domain.member.domain.*;
+import com.gdscswu_server.server.domain.member.dto.ProfileSaveRequestDto;
 import com.gdscswu_server.server.domain.model.TokenClaimVo;
 import com.gdscswu_server.server.global.util.JwtUtil;
-import org.junit.Test;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import java.nio.charset.StandardCharsets;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
+@RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@Slf4j
+@Transactional
 public class MemberControllerTest {
     @Autowired
     private MemberRepository memberRepository;
@@ -37,16 +50,11 @@ public class MemberControllerTest {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Transactional
     @Test
     @DisplayName("findById() Test")
     public void findById() throws Exception {
         // 정보를 보고 싶은 멤버 생성
-        Member member = Member.builder()
-                .googleEmail("googleEmail")
-                .name("name")
-                .profileImagePath("profileImagePath")
-                .build();
+        Member member = new Member("googleEmail", "name", "profileImagePath");
         memberRepository.save(member);
 
         // 정보를 보고 싶은 멤버의 기수 생성
@@ -84,11 +92,7 @@ public class MemberControllerTest {
         projectRepository.save(project1);
 
         // 정보를 보려는 멤버 생성
-        Member member2 = Member.builder()
-                .googleEmail("googleEmail")
-                .name("name")
-                .profileImagePath("profileImagePath")
-                .build();
+        Member member2 = new Member("googleEmail", "name", "profileImagePath");
         memberRepository.save(member2);
 
         // 정보를 보려는 멤버의 액세스 토큰을 생성
@@ -103,5 +107,88 @@ public class MemberControllerTest {
         mockMvc.perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("profileSave() 테스트")
+    public void profileSave() throws Exception {
+
+//        Member member = Member.builder()
+//                .name("lee")
+//                .major("major")
+//                .admissionYear(11111)
+//                .introduction("hi")
+//                .email("aaaaa@com")
+//                .build();
+
+        Member member = new Member("aaaaa@gmail.com", "lee", null);
+
+        Long memberId = memberRepository.save(member).getId();
+
+        ProfileSaveRequestDto requestDto = ProfileSaveRequestDto.builder()
+                .name("lee")
+                .major("major")
+                .admissionYear(11111)
+                .introduction("hi")
+                .email("aaaaa@com")
+                .build();
+
+        MockMultipartFile file = new MockMultipartFile("profileImage", "test.png", "image/png", new ClassPathResource("test.png").getInputStream());
+        MockMultipartFile json = new MockMultipartFile("data", "", "application/json", new ObjectMapper().writeValueAsString(requestDto).getBytes(StandardCharsets.UTF_8));
+//
+//        String content = objectMapper.writeValueAsString(requestDto);
+//
+        String accessToken = jwtUtil.generateTokens(member).getAccessToken();
+
+        mockMvc.perform(multipart("/api/v1/member")
+                        .file(file)
+                        .file(json)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        Member member1 = memberRepository.findById(memberId).orElseThrow(() -> new Exception("null"));
+        assertThat(member1.getProfileImagePath()).as("Profile image path가 수정되지 않음.").isNotNull();
+
+
+//        mockMvc.perform(post("/api/v1/member")
+//                        .content(content)
+//                        .contentType(APPLICATION_JSON)
+//                        .accept(APPLICATION_JSON)
+//                        .header("Authorization", "Bearer " + accessToken))
+//                .andExpect(status().isOk())
+//                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("Profile image 삭제 테스트")
+    public void removeProfileImage() throws Exception {
+        // given
+        Member member = new Member("aaaaa@gmail.com", "lee", null);
+        Long memberId = memberRepository.save(member).getId();
+        String accessToken = jwtUtil.generateTokens(member).getAccessToken();
+        ProfileSaveRequestDto requestDto = ProfileSaveRequestDto.builder()
+                .name("lee")
+                .major("major")
+                .admissionYear(11111)
+                .introduction("hi")
+                .email("aaaaa@com")
+                .build();
+
+        MockMultipartFile json = new MockMultipartFile("data", "", "application/json", new ObjectMapper().writeValueAsString(requestDto).getBytes(StandardCharsets.UTF_8));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(multipart("/api/v1/member")
+                .file(json)
+                .header("Authorization", "Bearer " + accessToken));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andDo(print());
+        Member member1 = memberRepository.findById(memberId).orElseThrow(() -> new Exception("null"));
+        assertThat(member1.getProfileImagePath()).as("Profile image path가 수정되지 않음.").isNull();
     }
 }
