@@ -35,6 +35,14 @@ public class Member {
     @Column(nullable = false)
     private Role role;
 
+    @Builder(builderMethodName = "googleBuilder")
+    public Member(@NotNull String googleEmail, String name, String profileImagePath) {
+        this.googleEmail = googleEmail;
+        this.name = name;
+        this.profileImagePath = profileImagePath;
+        this.role = Role.USER;
+    }
+
     @Builder
     public Member(String name, String major, Integer admissionYear, String introduction, String email) {
         this.name = name;
@@ -42,15 +50,6 @@ public class Member {
         this.admissionYear = admissionYear;
         this.introduction = introduction;
         this.email = email;
-
-    }
-
-    @Builder(builderMethodName = "googleBuilder")
-    public Member(String googleEmail, String name, String profileImagePath) {
-        this.googleEmail = googleEmail;
-        this.name = name;
-        this.profileImagePath = profileImagePath;
-        this.role = Role.USER;
     }
 
     @Override
