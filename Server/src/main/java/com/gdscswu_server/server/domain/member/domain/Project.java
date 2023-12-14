@@ -1,5 +1,6 @@
 package com.gdscswu_server.server.domain.member.domain;
 
+import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -21,6 +22,11 @@ public class Project {
     @NotNull
     private Member member;
 
+    @ManyToOne
+    @JoinColumn(name = "generation_id")
+    @NotNull
+    private Generation generation;
+
     @NotNull
     private String title;
 
@@ -30,6 +36,14 @@ public class Project {
     private String type;
     private String part;
 
+    @Builder
+    public Project(Generation generation,Member member, String title, String part) {
+        this.generation = generation;
+        this.member=member;
+        this.title = title;
+        this.part = part;
+    }
+  
     @Builder
     public Project(Member member, String title, Integer generation) {
         this.member = member;

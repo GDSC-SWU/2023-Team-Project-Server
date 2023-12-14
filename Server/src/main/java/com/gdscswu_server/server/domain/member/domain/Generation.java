@@ -1,5 +1,6 @@
 package com.gdscswu_server.server.domain.member.domain;
 
+import com.gdscswu_server.server.domain.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -46,6 +47,14 @@ public class Generation {
         return Objects.equals(this.id, generation.getId()) &&
                 Objects.equals(this.member, generation.getMember()) &&
                 Objects.equals(this.number, generation.getNumber());
+    }
+
+    @Builder
+    public Generation(Member member, Integer number, String department,String level) {
+        this.member = member;
+        this.number = number;
+        this.department = department;
+        this.level = level;
     }
 
     @Override
